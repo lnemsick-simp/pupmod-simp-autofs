@@ -38,10 +38,10 @@ class autofs::config::pki(
 ) {
   assert_private()
 
-  if $::autofs::pki {
+  if $autofs::pki {
     pki::copy { 'autofs':
       source => $app_pki_external_source,
-      pki    => $::autofs::pki
+      pki    => $autofs::pki
     }
   }
 }

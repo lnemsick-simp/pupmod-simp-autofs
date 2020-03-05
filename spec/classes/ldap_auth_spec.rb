@@ -1,72 +1,53 @@
 require 'spec_helper'
 
-describe 'autofs::ldap_auth' do
-  context 'supported operating systems' do
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        base_facts = facts
-        let(:facts) {base_facts}
+# Testing private autofs::ldap_auth class via autofs class
+describe 'autofs' do
+  describe 'private autofs::ldap_auth' do
+    let(:params) {{ :ldap => true }}
 
-        params = { :ldap_auth_conf_file => '/conf/file' }
-        let(:params) {params}
+    context 'supported operating systems' do
+      on_supported_os.each do |os, os_facts|
 
-        it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_class('autofs::ldap_auth') }
-        it { is_expected.to create_file(params[:ldap_auth_conf_file]) }
+        context "on #{os}" do
+          let(:facts) { os_facts }
 
-        context 'base_auth_conf_file' do
-          let(:facts) {facts}
-          let(:params) {{
-            :user                => 'foo',
-            :secret              => 'bar',
-            :authtype            => 'LOGIN',
-            :ldap_auth_conf_file => '/conf/file'
-          }}
+          context 'with default parameters' do
+            it { is_expected.to compile.with_all_deps }
+            it { is_expected.to create_class('autofs::ldap_auth') }
+            it { is_expected.to create_file('/etc/autofs_ldap_auth.conf').with( {
+              :owner   => 'root',
+              :group   => 'root',
+              :mode    => '0600',
+              :content => <<~EOM
+                <?xml version="1.0" ?>
+                <autofs_ldap_sasl_conf
+                  usetls="yes"
+                  tlsrequired="yes"
+                  authrequired="yes"
+                  authtype="LOGIN"
+                />
+              EOM
+            } ) }
+          end
 
-          it { is_expected.to compile.with_all_deps }
-          it { is_expected.to contain_file(params[:ldap_auth_conf_file]).with_content(/usetls="yes"/) }
-          it { is_expected.to contain_file(params[:ldap_auth_conf_file]).with_content(/tlsrequired="yes"/) }
-          it { is_expected.to contain_file(params[:ldap_auth_conf_file]).with_content(/authrequired="yes"/) }
-          it { is_expected.to contain_file(params[:ldap_auth_conf_file]).with_content(/authtype="LOGIN"/) }
-          it { is_expected.not_to contain_file(params[:ldap_auth_conf_file]).with_content(/external_cert/) }
-          it { is_expected.not_to contain_file(params[:ldap_auth_conf_file]).with_content(/external_key/) }
-          it { is_expected.to contain_file(params[:ldap_auth_conf_file]).with_content(/user="foo"/) }
-          it { is_expected.to contain_file(params[:ldap_auth_conf_file]).with_content(/secret="bar"/) }
-          it { is_expected.not_to contain_file(params[:ldap_auth_conf_file]).with_content(/clientprinc/) }
-          it { is_expected.not_to contain_file(params[:ldap_auth_conf_file]).with_content(/credentialcache/) }
-        end
+          context 'with simp_options::ldap* parameters set' do
+            let(:hieradata) { 'simp_options_ldap_params' }
 
-        context 'optional_args_in_base_auth_conf_file' do
-          let(:params) {{
-            :user                => 'foo',
-            :secret              => 'bar',
-            :ldap_auth_conf_file => '/conf/file',
-            :clientprinc         => 'foo/bar',
-            :credentialcache     => '/tmp/foo'
-          }}
+            it { is_expected.to compile.with_all_deps }
+            it { is_expected.to create_class('autofs::ldap_auth') }
+          end
 
-          it { is_expected.to compile.with_all_deps }
-          it { is_expected.to contain_file(params[:ldap_auth_conf_file]).with_content(/clientprinc="foo\/bar"/) }
-          it { is_expected.to contain_file(params[:ldap_auth_conf_file]).with_content(/credentialcache="\/tmp\/foo"/) }
-        end
+          context 'with all but encoded_secret optional parameters set' do
+          end
 
-        context 'external_certs_in_base_auth_conf_file' do
-          let(:pre_condition){
-            'class { "autofs": pki => "simp" }'
-          }
-          let(:params) {{
-            :user                => 'foo',
-            :secret              => 'bar',
-            :authtype            => 'EXTERNAL',
-            :ldap_auth_conf_file => '/conf/file'
-          }}
+          context 'with all optional parameters set' do
+          end
 
-          it { is_expected.to compile.with_all_deps }
-          it { is_expected.to contain_file(params[:ldap_auth_conf_file]).with_content(/authtype="EXTERNAL"/) }
-          it { is_expected.to contain_file(params[:ldap_auth_conf_file]).with_content(%r{external_cert="/etc/pki/simp_apps/autofs/x509/public/#{facts[:fqdn]}\.pub"}) }
-          it { is_expected.to contain_file(params[:ldap_auth_conf_file]).with_content(%r{external_key="/etc/pki/simp_apps/autofs/x509/private/#{facts[:fqdn]}\.pem"}) }
-          it { is_expected.to create_pki__copy('autofs')}
-          it { is_expected.to create_file('/etc/pki/simp_apps/autofs/x509')}
+          context 'with authrequired set to a string' do
+          end
+
+          context 'with authtype=EXTERNAL' do
+          end
         end
       end
     end

@@ -1,6 +1,7 @@
-# **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
+# @summary Manage autofs service
 #
-# This class provides for the installation of autofs
+# @api private
+# @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors
 #
 class autofs::service {
   service { 'autofs':
@@ -8,5 +9,10 @@ class autofs::service {
     enable     => true,
     hasstatus  => true,
     hasrestart => true
+  }
+
+  exec { 'autofs_reload':
+    command     => '/usr/bin/systemctl reload autofs',
+    refreshonly => true
   }
 }
