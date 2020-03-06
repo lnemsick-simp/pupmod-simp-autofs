@@ -209,15 +209,57 @@ describe 'autofs' do
 
         context 'with custom_autofs_conf_options set' do
           let(:params) {{
+            :custom_autofs_conf_options => {
+              'some'    => 'future',
+              'options' => 'tbd'
+            }
           }}
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_class('autofs::config') }
+          it { is_expected.to create_file('/etc/autofs.conf').with_content(
+            <<~EOM
+              # This file is managed by Puppet (simp-autofs module). Changes will be
+              # overwritten at the next Puppet run.
+              [autofs]
+
+              timeout = 600
+              mount_verbose = no
+              browse_mode = no
+              mount_nfs_default_protocol = 4
+              append_options = yes
+              logging = none
+              force_standard_program_map_env = no
+              use_hostname_for_mounts = no
+              disable_not_found_message = no
+              use_mount_request_log_id = no
+              some = future
+              options = tbd
+            EOM
+          ) }
         end
 
         context 'with automount_options set set' do
-          let(:params) {{
-          }}
+          let(:params) {{ :automount_options => '--random-multimount-selection' }}
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_class('autofs::config') }
+          it { is_expected.to create_file('/etc/sysconfig/autofs').with_content(
+            <<~EOM
+              # This file is managed by Puppet (simp-autofs module). Changes will be
+              # overwritten at the next Puppet run.
+              USE_MISC_DEVICE="yes"
+              OPTIONS="--random-multimount-selection"
+            EOM
+          ) }
         end
 
         context 'with maps set' do
+          let(:params) {{
+          }}
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_class('autofs::config') }
         end
       end
     end
