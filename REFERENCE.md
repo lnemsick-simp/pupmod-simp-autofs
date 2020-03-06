@@ -5,65 +5,66 @@
 
 **Classes**
 
-* [`autofs`](#autofs): This class provides for the configuration of ``autofs``
+_Public Classes_
+
+* [`autofs`](#autofs): Manage the installation and configuration of `autofs` and ensure
 * [`autofs::config::pki`](#autofsconfigpki): This class controls all pki related articles for autofs
-* [`autofs::install`](#autofsinstall): **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**  This class provides for the installation
-* [`autofs::ldap_auth`](#autofsldap_auth): Set up the ``autofs_ldap_auth.conf`` file
-* [`autofs::service`](#autofsservice): **NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**  This class provides for the installation
+
+_Private Classes_
+
+* `autofs::config`: Manages `autofs` global configuration
+* `autofs::install`: Manages installation of autofs
+* `autofs::ldap_auth`: Set up the ``autofs_ldap_auth.conf`` file
+* `autofs::service`: Manage autofs service
 
 **Defined types**
 
-* [`autofs::map::entry`](#autofsmapentry): Add an entry to the map specified in ``$name``  The map file will be created as ``/etc/autofs/$target.map``.  You will need to create an appr
-* [`autofs::map::master`](#autofsmapmaster): Add an entry to the ``/etc/auto.master`` map  If you're using the ``autofs::map::entry`` define, remember that the ``$target`` variable trans
+* [`autofs::map`](#autofsmap): 
+* [`autofs::mapfile`](#autofsmapfile): Create an autofs map file
+* [`autofs::masterfile`](#autofsmasterfile): Add a `$name.autofs` master entry file to `$autofs::master_conf_dir`
 
 **Data types**
 
 * [`Autofs::Authtype`](#autofsauthtype): 
-* [`Autofs::Maptype`](#autofsmaptype): 
+* [`Autofs::Directmapping`](#autofsdirectmapping): Single direct file system mapping that can be specified in an autofs map file
+* [`Autofs::Indirectmapping`](#autofsindirectmapping): Single indirect file system mapping that can be specified in an autofs map file
+* [`Autofs::Logging`](#autofslogging): automounter log level
+* [`Autofs::Mapspec`](#autofsmapspec): Specification for parameters needed to create an autofs::map
+* [`Autofs::Maptype`](#autofsmaptype): Map type for an auto.master entry
 
 ## Classes
 
 ### autofs
 
-This class provides for the configuration of ``autofs``
+its service is running.
 
 * **See also**
-auto.master(5)
-automount(8)
+autofs.conf
 
 #### Parameters
 
 The following parameters are available in the `autofs` class.
 
-##### `master_map_name`
-
-Data type: `String`
-
-The default map name for the master map
-
-Default value: 'auto.master'
-
-##### `mount_timeout`
+##### `timeout`
 
 Data type: `Integer`
 
-See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> TIMEOUT
+Sets the 'timeout' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: 600
 
 ##### `negative_timeout`
 
-Data type: `Integer`
+Data type: `Optional[Integer]`
 
 See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> NEGATIVE_TIMEOUT
 
-Default value: 60
+Default value: `undef`
 
 ##### `mount_wait`
 
 Data type: `Optional[Integer]`
 
-Type: Integer
 See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> MOUNT_WAIT
 
 Default value: `undef`
@@ -88,25 +89,25 @@ Default value: `false`
 
 Data type: `Boolean`
 
-Type: [yes|no]
 See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> APPEND_OPTIONS
 
 Default value: `true`
 
 ##### `logging`
 
-Data type: `Enum['none','verbose','debug']`
+Data type: `Autofs::Logging`
 
-Type: [none|verbose|debug]
 See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> LOGGING
 
 Default value: 'none'
 
 ##### `ldap_uri`
 
-Data type: `Optional[Simplib::Uri]`
+Data type: `Optional[Array[Simplib::Uri,1]]`
 
 See: auto.master(5) -> LDAP MAPS -> LDAP_TIMEOUT
+
+* Only applies if `$ldap` is `true`.
 
 Default value: `undef`
 
@@ -116,6 +117,8 @@ Data type: `Optional[Integer]`
 
 See: auto.master(5) -> LDAP MAPS -> LDAP_TIMEOUT
 
+* Only applies if `$ldap` is `true`.
+
 Default value: `undef`
 
 ##### `ldap_network_timeout`
@@ -124,13 +127,17 @@ Data type: `Optional[Integer]`
 
 See: auto.master(5) -> LDAP MAPS -> LDAP_NETWORK_TIMEOUT
 
+* Only applies if `$ldap` is `true`.
+
 Default value: `undef`
 
 ##### `search_base`
 
-Data type: `Optional[String]`
+Data type: `Optional[Array[String,1]]`
 
 See: auto.master(5) -> LDAP MAPS -> SEARCH_BASE
+
+* Only applies if `$ldap` is `true`.
 
 Default value: `undef`
 
@@ -140,6 +147,8 @@ Data type: `Optional[String]`
 
 See: auto.master(5) -> LDAP MAPS -> MAP_OBJECT_CLASS
 
+* Only applies if `$ldap` is `true`.
+
 Default value: `undef`
 
 ##### `entry_object_class`
@@ -147,6 +156,8 @@ Default value: `undef`
 Data type: `Optional[String]`
 
 See: auto.master(5) -> LDAP MAPS -> ENTRY_OBJECT_CLASS
+
+* Only applies if `$ldap` is `true`.
 
 Default value: `undef`
 
@@ -156,6 +167,8 @@ Data type: `Optional[String]`
 
 See: auto.master(5) -> LDAP MAPS -> MAP_ATTRIBUTE
 
+* Only applies if `$ldap` is `true`.
+
 Default value: `undef`
 
 ##### `entry_attribute`
@@ -164,6 +177,8 @@ Data type: `Optional[String]`
 
 See: auto.master(5) -> LDAP MAPS -> ENTRY_ATTRIBUTE
 
+* Only applies if `$ldap` is `true`.
+
 Default value: `undef`
 
 ##### `value_attribute`
@@ -171,6 +186,8 @@ Default value: `undef`
 Data type: `Optional[String]`
 
 See: auto.master(5) -> LDAP MAPS -> VALUE_ATTRIBUTE
+
+* Only applies if `$ldap` is `true`.
 
 Default value: `undef`
 
@@ -185,7 +202,7 @@ Set the map cache hash table size
 
 Default value: `undef`
 
-##### `use_misc_device`
+##### `automount_use_misc_device`
 
 Data type: `Boolean`
 
@@ -195,7 +212,7 @@ will not be used
 
 Default value: `true`
 
-##### `options`
+##### `automount_options`
 
 Data type: `Optional[String]`
 
@@ -229,6 +246,8 @@ Data type: `Boolean`
 
 Enable LDAP lookups
 
+* Further configuration may need to be made in the `autofs::ldap_auth` class
+
 Default value: simplib::lookup('simp_options::ldap', { 'default_value' => false })
 
 ##### `pki`
@@ -248,6 +267,118 @@ Data type: `Variant[Enum['simp'],Boolean]`
   * app_pki_ca_dir
 
 Default value: simplib::lookup('simp_options::pki', { 'default_value' => false })
+
+##### `master_wait`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### `mount_verbose`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### `mount_nfs_default_protocol`
+
+Data type: `Integer[3,4]`
+
+
+
+Default value: 4
+
+##### `force_standard_program_map_env`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### `use_hostname_for_mounts`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### `disable_not_found_message`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### `sss_master_map_wait`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### `use_mount_request_log_id`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### `auth_conf_file`
+
+Data type: `Stdlib::Absolutepath`
+
+
+
+Default value: '/etc/autofs_ldap_auth.conf'
+
+##### `custom_autofs_conf_options`
+
+Data type: `Hash`
+
+
+
+Default value: {}
+
+##### `master_conf_dir`
+
+Data type: `Stdlib::Absolutepath`
+
+
+
+Default value: '/etc/auto.master.simp.d'
+
+##### `master_include_dirs`
+
+Data type: `Array[Stdlib::Absolutepath]`
+
+
+
+Default value: [ '/etc/auto.master.d' ]
+
+##### `maps_dir`
+
+Data type: `Stdlib::Absolutepath`
+
+
+
+Default value: '/etc/autofs.maps.simp.d'
+
+##### `maps`
+
+Data type: `Hash[String,Autofs::Mapspec]`
+
+
+
+Default value: {}
 
 ### autofs::config::pki
 
@@ -308,261 +439,162 @@ Path and name of the public SSL certificate
 
 Default value: "${app_pki_dir}/public/${::fqdn}.pub"
 
-### autofs::install
+## Defined types
 
-**NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
+### autofs::map
 
-This class provides for the installation of autofs
-
-### autofs::ldap_auth
-
-Set up the ``autofs_ldap_auth.conf`` file
+The autofs::map class.
 
 #### Parameters
 
-The following parameters are available in the `autofs::ldap_auth` class.
+The following parameters are available in the `autofs::map` defined type.
 
-##### `ldap_auth_conf_file`
-
-Data type: `Stdlib::Absolutepath`
-
-Set the default location for the LDAP authentication configuration file
-
-Default value: '/etc/autofs_ldap_auth.conf'
-
-##### `usetls`
-
-Data type: `Boolean`
-
-Determines whether an encrypted connection to the ldap server should be
-attempted
-
-Default value: `true`
-
-##### `tlsrequired`
-
-Data type: `Boolean`
-
-Encrypt the LDAP connection
-
-* If set to ``yes``, the automounter will fail to start if an encrypted
-  connection cannot be established
-
-Default value: `true`
-
-##### `authrequired`
-
-Data type: `Variant[Boolean, Enum['autodetect','simple']]`
-
-This option tells whether an authenticated connection to the ldap
-server is required in order to perform ldap queries
-
-* If this flag is set to ``yes``, then only authenticated connections will
-  be allowed
-* If it is set to ``no`` then authentication is not needed for ldap server
-  connections
-* If it is set to ``autodetect`` then the ldap server will be queried to
-  establish a suitable authentication mechanism
-* If no suitable mechanism can be found, connections to the ldap server are
-  made without authentication
-
-Default value: `true`
-
-##### `authtype`
-
-Data type: `Autofs::Authtype`
-
-This attribute can be used to specify a preferred authentication mechanism
-
-* In normal operations, the automounter will attempt to authenticate to the
-ldap server using the list of ``supportedSASLmechanisms`` obtained from the
-directory server
-* Explicitly setting the authtype will bypass this selection and only try
-the mechanism specified
-* The ``EXTERNAL`` mechanism may be used to authenticate using a client
-  certificate and requires that authrequired set to ``yes`` if using SSL or
-  ``usetls``, ``tlsrequired`` and ``authrequired`` all set to ``yes`` if
-  using TLS, in addition to ``authtype`` being set ``EXTERNAL``
-
-Default value: 'LOGIN'
-
-##### `external_cert`
+##### `mount_point`
 
 Data type: `Stdlib::Absolutepath`
 
-This specifies the path of the file containing the client certificate.
-Set ::autofs::pki to false if you don't want SIMP to manage this cert.
+Base location for the autofs filesystem to be mounted
 
-Default value: "/etc/pki/simp_apps/autofs/x509/public/${facts['fqdn']}.pub"
+* Set to '/-' for direct maps
+* Set to a fully-qualified path for indirect mounts
+* See auto.master(5) -> FORMAT -> mount-point
 
-##### `external_key`
-
-Data type: `Stdlib::Absolutepath`
-
-This specifies the path of the file containing the client certificate key
-Set ::autofs::pki to false if you don't want SIMP to manage this key.
-
-Default value: "/etc/pki/simp_apps/autofs/x509/private/${facts['fqdn']}.pem"
-
-##### `user`
+##### `master_options`
 
 Data type: `Optional[String]`
 
-This attribute holds the authentication identity used by authentication
-mechanisms that require it
+Options for `mount` and/or `automount` specified in the auto.master entry file
 
-* Legal values for this attribute include any printable characters that can
-  be used by the selected authentication mechanism
-
-Default value: simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => undef })
-
-##### `secret`
-
-Data type: `Optional[String]`
-
-This attribute holds the secret used by authentication mechanisms that
-require it
-
-* Legal values for this attribute include any printable characters that can
-  be used by the selected authentication mechanism
-
-Default value: simplib::lookup('simp_options::ldap::bind_pw', { 'default_value' =>  undef})
-
-##### `clientprinc`
-
-Data type: `Optional[String]`
-
-When using ``GSSAPI`` authentication, this attribute is consulted to
-determine the principal name to use when authenticating to the directory
-server
+* See auto.master(5) -> FORMAT -> options
 
 Default value: `undef`
 
-##### `credentialcache`
+##### `mappings`
 
-Data type: `Optional[Stdlib::Absolutepath]`
+Data type: `Variant[Autofs::Directmapping, Array[Autofs::Indirectmapping,1]]`
 
-When using ``GSSAPI`` authentication, this attribute can be used to specify
-an externally configured credential cache that is used during
-authentication
+Single direct mapping or one or more indirect mappings
 
-Default value: `undef`
+* Each mapping specifies a key, a location, and any automounter and/or
+  mount options.
 
-### autofs::service
+### autofs::mapfile
 
-**NOTE: THIS IS A [PRIVATE](https://github.com/puppetlabs/puppetlabs-stdlib#assert_private) CLASS**
-
-This class provides for the installation of autofs
-
-## Defined types
-
-### autofs::map::entry
-
-Add an entry to the map specified in ``$name``
-
-The map file will be created as ``/etc/autofs/$target.map``.
-
-You will need to create an appropriate ``map::master`` entry for this to be
-activated.
+You will need to create an corresponding `autofs::masterfile` entry for this
+to be activated.  Alternatively, use `autofs::map`, which will create both
+the master entry file and its map file for you.
 
 * **See also**
 autofs(5)
 
+#### Examples
+
+##### Create an autofs map file for a direct map
+
+```puppet
+autofs::mapfile('/etc/autofs.maps.simp.d/apps.map':
+ mappings => {
+   'key'      => '/net/apps',
+   'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
+   'location' => '1.2.3.4:/exports/apps'
+ }
+```
+
+##### Create an autofs map file for an indirect map with one mapping
+
+```puppet
+autofs::mapfile('/etc/autofs.maps.simp.d/home.map':
+ mappings => [
+   {
+     'key'      => '*',
+     'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+     'location' => '1.2.3.4:/exports/home/&'
+   }
+ ]
+```
+
+##### Create an autofs map file for an indirect map with mutiple mappings
+
+```puppet
+autofs::mapfile('/etc/autofs.maps.simp.d/apps.map':
+ mappings => [
+   {
+     'key'      => 'app1
+     'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+     'location' => '1.2.3.4:/exports/app1'
+   },
+   {
+     'key'      => 'app2
+     'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+     'location' => '1.2.3.5:/exports/app2'
+   }
+ ]
+```
+
 #### Parameters
 
-The following parameters are available in the `autofs::map::entry` defined type.
+The following parameters are available in the `autofs::mapfile` defined type.
 
 ##### `name`
 
-In this case, ``$name`` is mapped to the ``key`` entry as described in
-``autofs(5)``
+Fully qualified path of the map file
 
-* The special wildcard entry ``*`` is specified by entering the name as
-  ``wildcard-<anything_unique>``
+##### `mappings`
 
-##### `target`
+Data type: `Variant[Autofs::Directmapping, Array[Autofs::Indirectmapping,1]]`
 
-Data type: `Optional[String]`
+Single direct mapping or one or more indirect mappings
 
-The name (**not the full path**) of the map file under which you would like
-this entry placed
+* Each mapping specifies a key, a location, and any automounter and/or
+  mount options.
+* Any change to a direct map will trigger a reload of the autofs service.
+  This is not necessary for an indirect map.
 
-* Required unless ``$content`` is set
+### autofs::masterfile
 
-Default value: `undef`
-
-##### `location`
-
-Data type: `Optional[String]`
-
-The location that should be mounted
-
-* Required unless ``$content`` is set
-* This should be the full path on the remote server
-    * Example: ``1.2.3.4:/my/files``
-* See ``autofs(5)`` for details
-
-Default value: `undef`
-
-##### `options`
-
-Data type: `Optional[String]`
-
-The NFS ``options`` that you would like to add to your map
-
-Default value: `undef`
-
-##### `content`
-
-Data type: `Optional[String]`
-
-Use this content, without validation, ignoring all other options
-
-Default value: `undef`
-
-### autofs::map::master
-
-Add an entry to the ``/etc/auto.master`` map
-
-If you're using the ``autofs::map::entry`` define, remember that the
-``$target`` variable translates to '/etc/autofs/$target.map' which is what
-you should enter for ``$map`` below.
+FIXME comment needs an update?
+If you're using the `autofs::map::entry` define, remember that its
+`$target` variable translates to '/etc/autofs/$target.map' which is what
+you should enter for `$map` below.
 
 * **See also**
 auto.master(5)
 
 #### Parameters
 
-The following parameters are available in the `autofs::map::master` defined type.
+The following parameters are available in the `autofs::masterfile` defined type.
 
 ##### `mount_point`
 
-Data type: `Optional[Stdlib::Absolutepath]`
+Data type: `Stdlib::Absolutepath`
 
-See auto.master(5) -> FORMAT -> mount-point
+Base location for the autofs filesystem to be mounted
 
-* Required unless ``$content`` is set
+* Set to '/-' for direct maps
+* Set to a fully-qualified path for indirect mounts
+* See auto.master(5) -> FORMAT -> mount-point
 
-Default value: `undef`
+##### `map`
 
-##### `map_name`
+Data type: `String`
 
-Data type: `Optional[String]`
+Name of the map to use
 
-See auto.master(5) -> FORMAT -> map
+* See auto.master(5) -> FORMAT -> map
+* Format of this String must match $map_type:
 
-* Required unless ``$content`` is set
-* $map_type[file|program]      => Absolute Path
-* $map_type[yp|nisplus|hesiod] => String
-* $map_type[ldap|ldaps]        => LDAP DN
-
-Default value: `undef`
+  * $map_type of undef|file|program => Absolute Path
+  * $map_type of yp|nisplus|hesiod  => String
+  * $map_type of ldap|ldaps         => LDAP DN
 
 ##### `map_type`
 
 Data type: `Optional[Autofs::Maptype]`
 
-See auto.master(5) -> FORMAT -> map-type
+Type of map used for this mount point
+
+* When unspecified, autofs assumes this is 'file'
+* See auto.master(5) -> FORMAT -> map-type
 
 Default value: `undef`
 
@@ -570,7 +602,10 @@ Default value: `undef`
 
 Data type: `Optional[Enum['sun','hesiod']]`
 
-See auto.master(5) -> FORMAT -> format
+Format of the map data
+
+* When unspecified, autofs assumes this is 'sun'
+* See auto.master(5) -> FORMAT -> format
 
 Default value: `undef`
 
@@ -578,15 +613,9 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-See auto.master(5) -> FORMAT -> options
+Options for `mount` and/or `automount`
 
-Default value: `undef`
-
-##### `content`
-
-Data type: `Optional[String]`
-
-Ignore all other parameters and use this content without validation
+* See auto.master(5) -> FORMAT -> options
 
 Default value: `undef`
 
@@ -598,9 +627,75 @@ The Autofs::Authtype data type.
 
 Alias of `Enum['GSSAPI', 'LOGIN', 'PLAIN', 'ANONYMOUS', 'DIGEST-MD5', 'EXTERNAL']`
 
+### Autofs::Directmapping
+
+Single direct file system mapping that can be specified in an
+autofs map file
+
+#### Examples
+
+##### Direct map without options
+
+```puppet
+{ 'key' => '/mnt/apps', location => 'server.example.com:/exports/apps' }
+```
+
+##### Direct map with options
+
+```puppet
+{ 'key' => '/mnt/apps', options => 'nfsvers=4,ro', location => 'server.example.com:/exports/apps' }
+```
+
+Alias of `Struct[{
+  key      => Stdlib::Absolutepath,
+  options  => Optional[Pattern[/\A\S+\z/]], # non empty string
+  location => Pattern[/\S/]                 # contains at least 1 non-whitespace char
+}]`
+
+### Autofs::Indirectmapping
+
+Single indirect file system mapping that can be specified in an
+autofs map file
+
+#### Examples
+
+##### Indirect map without options
+
+```puppet
+{ 'key' => 'data', location => 'server.example.com:/exports/data' }
+```
+
+##### Indirect map with options
+
+```puppet
+{ 'key' => '*', options => 'soft,rw', location => 'server.example.com:/exports/home/&' }
+```
+
+Alias of `Struct[{
+  key      => Pattern[/\A[^\s\/]+\z/],      # non empty string excluding /
+  options  => Optional[Pattern[/\A\S+\z/]], # non empty string
+  location => Pattern[/\S/]                 # contains at least 1 non-whitespace char
+}]`
+
+### Autofs::Logging
+
+automounter log level
+
+Alias of `Enum['none', 'verbose', 'debug']`
+
+### Autofs::Mapspec
+
+Specification for parameters needed to create an autofs::map
+
+Alias of `Struct[{
+  mount_point    => Stdlib::Absolutepath,
+  master_options => Optional[String],
+  mappings       => Variant[Autofs::Directmapping, Array[Autofs::Indirectmapping,1]]
+}]`
+
 ### Autofs::Maptype
 
-The Autofs::Maptype data type.
+Map type for an auto.master entry
 
 Alias of `Enum['file', 'program', 'yp', 'nisplus', 'hesiod', 'ldap', 'ldaps', 'multi']`
 

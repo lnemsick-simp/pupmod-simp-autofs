@@ -17,6 +17,39 @@
 #   * Any change to a direct map will trigger a reload of the autofs service.
 #     This is not necessary for an indirect map.
 #
+# @example Create an autofs map file for a direct map
+#   autofs::mapfile('/etc/autofs.maps.simp.d/apps.map':
+#    mappings => {
+#      'key'      => '/net/apps',
+#      'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
+#      'location' => '1.2.3.4:/exports/apps'
+#    }
+#
+# @example Create an autofs map file for an indirect map with one mapping
+#   autofs::mapfile('/etc/autofs.maps.simp.d/home.map':
+#    mappings => [
+#      {
+#        'key'      => '*',
+#        'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+#        'location' => '1.2.3.4:/exports/home/&'
+#      }
+#    ]
+#
+# @example Create an autofs map file for an indirect map with mutiple mappings
+#   autofs::mapfile('/etc/autofs.maps.simp.d/apps.map':
+#    mappings => [
+#      {
+#        'key'      => 'app1
+#        'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+#        'location' => '1.2.3.4:/exports/app1'
+#      },
+#      {
+#        'key'      => 'app2
+#        'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+#        'location' => '1.2.3.5:/exports/app2'
+#      }
+#    ]
+#
 # @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors
 #
 define autofs::mapfile (
