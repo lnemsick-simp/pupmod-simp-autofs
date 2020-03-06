@@ -41,7 +41,7 @@ define autofs::map(
 
   include 'autofs'
 
-  $_safe_name = regsubst($name, '(/|\s)', '__')
+  $_safe_name = regsubst($name, '(/|\s)', '__', 'G')
   $_map_filename = "${autofs::maps_dir}/${_safe_name}.map"
 
   autofs::mapfile { $_map_filename:

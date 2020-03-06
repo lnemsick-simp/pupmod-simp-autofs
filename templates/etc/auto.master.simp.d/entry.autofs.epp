@@ -16,9 +16,9 @@
   }
 
   if $options {
-    $_entry = "${mount_point} ${_map_spec}${map}"
+    $_entry = "${mount_point}  ${_map_spec}${map}  ${options}"
   } else {
-    $_entry = "${mount_point} ${_map_spec}${map} ${options}"
+    $_entry = "${mount_point}  ${_map_spec}${map}"
   }
 -%>
 # This file is managed by Puppet (simp-autofs module).  Changes will be

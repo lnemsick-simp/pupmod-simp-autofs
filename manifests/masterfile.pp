@@ -46,9 +46,9 @@
 define autofs::masterfile (
   Stdlib::Absolutepath           $mount_point,
   String                         $map,
-  Optional[Autofs::Maptype]      $map_type    = undef,
-  Optional[Enum['sun','hesiod']] $map_format  = undef,
-  Optional[String]               $options     = undef
+  Optional[Autofs::Maptype]      $map_type   = undef,
+  Optional[Enum['sun','hesiod']] $map_format = undef,
+  Optional[String]               $options    = undef
 ) {
 
   include 'autofs'
@@ -68,12 +68,12 @@ define autofs::masterfile (
     'options'     => $options
   })
 
-  $_safe_name = regsubst($name, '(/|\s)', '__')
-  file { "${autofs::master_conf_dir}/${_safe_name}":
-    owner          => 'root',
-    group          => 'root',
-    mode           => '0640',
-    content        => $_content,
-    notify         => Exec['autofs_reload']
+  $_safe_name = regsubst($name, '(/|\s)', '__', 'G')
+  file { "${autofs::master_conf_dir}/${_safe_name}.autofs":
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0640',
+    content => $_content,
+    notify  => Exec['autofs_reload']
   }
 }
