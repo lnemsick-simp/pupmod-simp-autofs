@@ -3,5 +3,5 @@
 type Autofs::Mapspec = Struct[{
   mount_point    => Stdlib::Absolutepath,
   master_options => Optional[String],
-  mappings       => Variant[Autofs::DirectMapping, Array[Autofs::IndirectMapping,1]]
+  mappings       => Variant[Autofs::Directmapping, Array[Autofs::Indirectmapping,1]]
 }]

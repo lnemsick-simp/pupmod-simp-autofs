@@ -15,6 +15,8 @@ describe 'autofs::masterfile' do
         }}
 
         it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_class('autofs') }
+        it { is_expected.to contain_autofs__masterfile(title) }
         it { is_expected.to contain_file(auto_master_entry_file).with( {
           :owner   => 'root',
           :group   => 'root',
@@ -36,6 +38,8 @@ describe 'autofs::masterfile' do
         }}
 
         it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_class('autofs') }
+        it { is_expected.to contain_autofs__masterfile(title) }
         it { is_expected.to contain_file(auto_master_entry_file).with_content(
           <<~EOM
             # This file is managed by Puppet (simp-autofs module).  Changes will be
