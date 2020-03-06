@@ -80,6 +80,145 @@ describe 'autofs' do
 
           it { is_expected.to_not create_class('autofs::ldap_auth') }
         end
+
+        context 'with ldap=false and optional parameters' do
+          let(:params) {{
+            :ldap                => false,
+            :master_wait         => 10,
+            :negative_timeout    => 20,
+            :mount_wait          => 30,
+            :umount_wait         => 40,
+            :map_hash_table_size => 4096,
+            :sss_master_map_wait => 50
+          }}
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_class('autofs::config') }
+          it { is_expected.to create_file('/etc/autofs.conf').with( {
+            :owner   => 'root',
+            :group   => 'root',
+            :mode    => '0644',
+            :content => <<~EOM
+              # This file is managed by Puppet (simp-autofs module). Changes will be
+              # overwritten at the next Puppet run.
+              [autofs]
+
+              timeout = 600
+              master_wait = 10
+              negative_timeout = 20
+              mount_verbose = no
+              mount_wait = 30
+              umount_wait = 40
+              browse_mode = no
+              mount_nfs_default_protocol = 4
+              append_options = yes
+              logging = none
+              force_standard_program_map_env = no
+              map_hash_table_size = 4096
+              use_hostname_for_mounts = no
+              disable_not_found_message = no
+              sss_master_map_wait = 50
+              use_mount_request_log_id = no
+            EOM
+          } ) }
+        end
+
+        context 'with ldap=true and default ldap-related parameters' do
+          let(:params) {{ :ldap => true }}
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_class('autofs::config') }
+          it { is_expected.to create_class('autofs::ldap_auth') }
+          it { is_expected.to create_file('/etc/autofs.conf').with( {
+            :owner   => 'root',
+            :group   => 'root',
+            :mode    => '0644',
+            :content => <<~EOM
+              # This file is managed by Puppet (simp-autofs module). Changes will be
+              # overwritten at the next Puppet run.
+              [autofs]
+
+              timeout = 600
+              mount_verbose = no
+              browse_mode = no
+              mount_nfs_default_protocol = 4
+              append_options = yes
+              logging = none
+              force_standard_program_map_env = no
+              use_hostname_for_mounts = no
+              disable_not_found_message = no
+              use_mount_request_log_id = no
+              auth_conf_file = /etc/autofs_ldap_auth.conf
+            EOM
+          } ) }
+        end
+
+        context 'with ldap=true and optional ldap-related parameters' do
+          let(:params) {{
+            :ldap                 => true,
+            :ldap_uri             => [
+              'ldaps://ldap1.example.com',
+              'ldaps://ldap2.example.com'
+            ],
+            :ldap_timeout         => 10,
+            :ldap_network_timeout => 20,
+            :search_base          => [ 'cn=automount,dc=example,dc=com' ],
+            :map_object_class     => 'automountMap',
+            :entry_object_class   => 'automount',
+            :map_attribute        => 'automountMapName',
+            :entry_attribute      => 'automountKey',
+            :value_attribute      => 'automountInformation'
+          }}
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_class('autofs::config') }
+          it { is_expected.to create_class('autofs::ldap_auth') }
+          it { is_expected.to create_file('/etc/autofs.conf').with( {
+            :owner   => 'root',
+            :group   => 'root',
+            :mode    => '0644',
+            :content => <<~EOM
+              # This file is managed by Puppet (simp-autofs module). Changes will be
+              # overwritten at the next Puppet run.
+              [autofs]
+
+              timeout = 600
+              mount_verbose = no
+              browse_mode = no
+              mount_nfs_default_protocol = 4
+              append_options = yes
+              logging = none
+              force_standard_program_map_env = no
+              use_hostname_for_mounts = no
+              disable_not_found_message = no
+              use_mount_request_log_id = no
+              ldap_uri = ldaps://ldap1.example.com
+              ldap_uri = ldaps://ldap2.example.com
+              ldap_timeout = 10
+              ldap_network_timeout = 20
+              search_base = cn=automount,dc=example,dc=com
+              map_object_class = automountMap
+              entry_object_class = automount
+              map_attribute = automountMapName
+              entry_attribute = automountKey
+              value_attribute = automountInformation
+              auth_conf_file = /etc/autofs_ldap_auth.conf
+            EOM
+          } ) }
+        end
+
+        context 'with custom_autofs_conf_options set' do
+          let(:params) {{
+          }}
+        end
+
+        context 'with automount_options set set' do
+          let(:params) {{
+          }}
+        end
+
+        context 'with maps set' do
+        end
       end
     end
   end

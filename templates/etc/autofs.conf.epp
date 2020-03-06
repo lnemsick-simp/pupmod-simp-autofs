@@ -37,18 +37,22 @@ sss_master_map_wait = <%= $autofs::sss_master_map_wait %>
 <% } -%>
 use_mount_request_log_id = <%= $bool2str[$autofs::use_mount_request_log_id] %>
 <% if $autofs::ldap {
-     if $autofs::ldap_uri { -%>
-ldap_uri = <%= $autofs::ldap_uri %>
-<%   }
+     if $autofs::ldap_uri {
+       $autofs::ldap_uri.each |Simplib::Uri $_uri| { -%>
+ldap_uri = <%= $_uri %>
+<%     }
+     }
      if $autofs::ldap_timeout { -%>
 ldap_timeout = <%= $autofs::ldap_timeout %>
 <%   }
      if $autofs::ldap_network_timeout { -%>
 ldap_network_timeout = <%= $autofs::ldap_network_timeout %>
 <%   }
-     if $autofs::search_base { -%>
-search_base = <%= $autofs::search_base %>
-<%   }
+     if $autofs::search_base {
+       $autofs::search_base.each |String $_search_base| { -%>
+search_base = <%= $_search_base %>
+<%     }
+     }
      if $autofs::map_object_class { -%>
 map_object_class = <%= $autofs::map_object_class %>
 <%   }
@@ -64,14 +68,14 @@ entry_attribute = <%= $autofs::entry_attribute %>
      if $autofs::value_attribute { -%>
 value_attribute = <%= $autofs::value_attribute %>
 <%   } -%>
-auth_conf_file = <%= $autofs::auth_conf_file  -%>
+auth_conf_file = <%= $autofs::auth_conf_file %>
 <% }
 
-  unless empty($autofs::custom_autofs_conf_options) {
-    $autofs::custom_autofs_conf_options.each |String $k, String $v| {
+   unless empty($autofs::custom_autofs_conf_options) {
+     $autofs::custom_autofs_conf_options.each |String $k, String $v| {
 -%>
 <%= $k %> = <%= $v %>
 <%
-    }
-  }
+     }
+   }
 -%>
