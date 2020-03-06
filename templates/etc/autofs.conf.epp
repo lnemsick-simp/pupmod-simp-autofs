@@ -4,8 +4,8 @@
     false => 'no'
   }
 -%>
-# This file is managed by Puppet (simp-autofs module). Changes will be overwritten
-# at the next Puppet run.
+# This file is managed by Puppet (simp-autofs module). Changes will be
+# overwritten at the next Puppet run.
 [autofs]
 
 timeout = <%= $autofs::timeout %>
@@ -24,18 +24,18 @@ umount_wait = <%= $autofs::umount_wait %>
 <% } -%>
 browse_mode = <%= $bool2str[$autofs::browse_mode] %>
 mount_nfs_default_protocol = <%= $autofs::mount_nfs_default_protocol %>
-append_options = <%= $autofs::append_options %>
+append_options = <%= $bool2str[$autofs::append_options] %>
 logging = <%= $autofs::logging %>
-force_standard_program_map_env = <%= $autofs::force_standard_program_map_env %>
+force_standard_program_map_env = <%= $bool2str[$autofs::force_standard_program_map_env] %>
 <% if $autofs::map_hash_table_size { -%>
 map_hash_table_size = <%= $autofs::map_hash_table_size %>
 <% } -%>
-use_hostname_for_mounts = <%= $autofs::use_hostname_for_mounts %>
-disable_not_found_message = false
+use_hostname_for_mounts = <%= $bool2str[$autofs::use_hostname_for_mounts] %>
+disable_not_found_message = <%= $bool2str[$autofs::disable_not_found_message] %>
 <% if $autofs::sss_master_map_wait { -%>
 sss_master_map_wait = <%= $autofs::sss_master_map_wait %>
 <% } -%>
-use_mount_request_log_id = <%= $autofs::use_mount_request_log_id %>
+use_mount_request_log_id = <%= $bool2str[$autofs::use_mount_request_log_id] %>
 <% if $autofs::ldap {
      if $autofs::ldap_uri { -%>
 ldap_uri = <%= $autofs::ldap_uri %>

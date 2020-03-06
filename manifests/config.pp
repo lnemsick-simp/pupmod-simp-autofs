@@ -7,7 +7,6 @@ class autofs::config {
   assert_private()
 
   file { '/etc/autofs.conf':
-    ensure  => 'file',
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
@@ -15,7 +14,6 @@ class autofs::config {
   }
 
   file { '/etc/sysconfig/autofs':
-    ensure  => 'file',
     owner   => 'root',
     group   => 'root',
     mode    => '0640',
@@ -23,7 +21,6 @@ class autofs::config {
   }
 
   file { '/etc/auto.master':
-    ensure  => 'file',
     owner   => 'root',
     group   => 'root',
     mode    => '0640',
