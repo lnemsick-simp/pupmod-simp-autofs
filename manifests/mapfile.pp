@@ -7,7 +7,7 @@
 # @see autofs(5)
 #
 # @param name
-#   Fully qualified path of the map file
+#   Base name of the map excluding the path and the `.map` suffix
 #
 # @param mappings
 #   Single direct mapping or one or more indirect mappings
@@ -17,8 +17,11 @@
 #   * Any change to a direct map will trigger a reload of the autofs service.
 #     This is not necessary for an indirect map.
 #
+# @param maps_dir
+#   When unset defaults to `autofs::maps_dir`
+#
 # @example Create an autofs map file for a direct map
-#   autofs::mapfile('/etc/autofs.maps.simp.d/apps.map':
+#   autofs::mapfile('apps':
 #    mappings => {
 #      'key'      => '/net/apps',
 #      'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
@@ -26,7 +29,7 @@
 #    }
 #
 # @example Create an autofs map file for an indirect map with one mapping
-#   autofs::mapfile('/etc/autofs.maps.simp.d/home.map':
+#   autofs::mapfile('home':
 #    mappings => [
 #      {
 #        'key'      => '*',
@@ -36,7 +39,7 @@
 #    ]
 #
 # @example Create an autofs map file for an indirect map with mutiple mappings
-#   autofs::mapfile('/etc/autofs.maps.simp.d/apps.map':
+#   autofs::mapfile('apps':
 #    mappings => [
 #      {
 #        'key'      => 'app1
@@ -53,16 +56,21 @@
 # @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors
 #
 define autofs::mapfile (
-  Variant[Autofs::Directmapping, Array[Autofs::Indirectmapping,1]] $mappings
-) {
+  Variant[Autofs::Directmapping, Array[Autofs::Indirectmapping,1]] $mappings,
+  Optional[Stdlib::Absolutepath]                                   $maps_dir = undef
 
-  if $name !~ Stdlib::Absolutepath {
-    fail('"$name" must be a Stdlib::Absolutepath')
-  }
+) {
 
   include 'autofs'
 
-  file { $name:
+  if $maps_dir =~ Undef {
+    $_maps_dir = $autofs::maps_dir
+  } else {
+    $_maps_dir = $maps_dir
+  }
+
+  $_map_file = "${_maps_dir}/${name}.map"
+  file { $_map_file:
     owner   => 'root',
     group   => 'root',
     mode    => '0640',
@@ -72,6 +80,6 @@ define autofs::mapfile (
 
   if $mappings =~ Autofs::Directmapping {
     # Direct map changes are only picked up if the autofs service is reloaded
-    File[$name] ~> Exec['autofs_reload']
+    File[$_map_file] ~> Exec['autofs_reload']
   }
 }

@@ -6,9 +6,10 @@ describe 'autofs::mapfile' do
       let(:facts) { os_facts }
 
       context 'with a direct mapping' do
-        let(:title) { '/etc/autofs.maps.simp.d/apps.map'}
+        let(:title) { 'apps' }
+        let(:map_file) { '/etc/autofs.maps.simp.d/apps.map'}
 
-        context 'without options' do
+        context 'without mapping options' do
           let(:params) {{
             :mappings => {
               'key'      => '/net/apps',
@@ -19,7 +20,7 @@ describe 'autofs::mapfile' do
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to contain_class('autofs') }
           it { is_expected.to contain_autofs__mapfile(title) }
-          it { is_expected.to contain_file(title).with( {
+          it { is_expected.to contain_file(map_file).with( {
             :owner   => 'root',
             :group   => 'root',
             :mode    => '0640',
@@ -30,10 +31,10 @@ describe 'autofs::mapfile' do
             EOM
           } ) }
 
-          it { is_expected.to contain_file(title).that_notifies('Exec[autofs_reload]') }
+          it { is_expected.to contain_file(map_file).that_notifies('Exec[autofs_reload]') }
         end
 
-        context 'with options' do
+        context 'with mapping options' do
           let(:params) {{
             :mappings => {
               'key'      => '/net/apps',
@@ -44,7 +45,7 @@ describe 'autofs::mapfile' do
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to contain_autofs__mapfile(title) }
-          it { is_expected.to contain_file(title).with_content(
+          it { is_expected.to contain_file(map_file).with_content(
             <<~EOM
               # This file is managed by Puppet (simp-autofs module).  Changes will be
               # overwritten at the next puppet run.
@@ -52,14 +53,15 @@ describe 'autofs::mapfile' do
             EOM
           ) }
 
-          it { is_expected.to contain_file(title).that_notifies('Exec[autofs_reload]') }
+          it { is_expected.to contain_file(map_file).that_notifies('Exec[autofs_reload]') }
         end
       end
 
       context 'with a single indirect mapping' do
-        let(:title) { '/etc/autofs.maps.simp.d/home.map'}
+        let(:title) { 'home' }
+        let(:map_file) { '/etc/autofs.maps.simp.d/home.map'}
 
-        context 'without options' do
+        context 'without mapping options' do
           let(:params) {{
             :mappings => [ {
               'key'      => '*',
@@ -69,7 +71,7 @@ describe 'autofs::mapfile' do
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to contain_autofs__mapfile(title) }
-          it { is_expected.to contain_file(title).with_content(
+          it { is_expected.to contain_file(map_file).with_content(
             <<~EOM
               # This file is managed by Puppet (simp-autofs module).  Changes will be
               # overwritten at the next puppet run.
@@ -77,10 +79,10 @@ describe 'autofs::mapfile' do
             EOM
           ) }
 
-          it { is_expected.to_not contain_file(title).that_notifies('Exec[autofs_reload]') }
+          it { is_expected.to_not contain_file(map_file).that_notifies('Exec[autofs_reload]') }
         end
 
-        context 'with options' do
+        context 'with mapping options' do
           let(:params) {{
             :mappings => [ {
               'key'      => '*',
@@ -91,7 +93,7 @@ describe 'autofs::mapfile' do
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to contain_autofs__mapfile(title) }
-          it { is_expected.to contain_file(title).with_content(
+          it { is_expected.to contain_file(map_file).with_content(
             <<~EOM
               # This file is managed by Puppet (simp-autofs module).  Changes will be
               # overwritten at the next puppet run.
@@ -99,12 +101,13 @@ describe 'autofs::mapfile' do
             EOM
           ) }
 
-          it { is_expected.to_not contain_file(title).that_notifies('Exec[autofs_reload]') }
+          it { is_expected.to_not contain_file(map_file).that_notifies('Exec[autofs_reload]') }
         end
       end
 
       context 'with a multiple indirect mappings' do
-        let(:title) { '/etc/autofs.maps.simp.d/apps.map'}
+        let(:title) { 'apps' }
+        let(:map_file) { '/etc/autofs.maps.simp.d/apps.map'}
         let(:params) {{
           :mappings => [
             {
@@ -125,7 +128,7 @@ describe 'autofs::mapfile' do
 
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_autofs__mapfile(title) }
-        it { is_expected.to contain_file(title).with_content(
+        it { is_expected.to contain_file(map_file).with_content(
           <<~EOM
             # This file is managed by Puppet (simp-autofs module).  Changes will be
             # overwritten at the next puppet run.
@@ -135,14 +138,26 @@ describe 'autofs::mapfile' do
           EOM
         ) }
 
-        it { is_expected.to_not contain_file(title).that_notifies('Exec[autofs_reload]') }
+        it { is_expected.to_not contain_file(map_file).that_notifies('Exec[autofs_reload]') }
       end
 
-      context 'with errors' do
-        let(:title) { 'home.map' }
-        it 'fails when title is not an absolute path' do
-          is_expected.to_not compile.with_all_deps
-        end
+      context 'with maps_dir' do
+        let(:title) { 'apps' }
+        let(:params) {{
+          :mappings => {
+            'key'      => '/net/apps',
+            'location' => '1.2.3.4:/exports/apps'
+          },
+          :maps_dir => '/etc/maps.d'
+        }}
+
+        let(:map_file) { '/etc/maps.d/apps.map'}
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_class('autofs') }
+        it { is_expected.to contain_autofs__mapfile(title) }
+        it { is_expected.to contain_file(map_file) }
+        it { is_expected.to contain_file(map_file).that_notifies('Exec[autofs_reload]') }
       end
     end
   end
