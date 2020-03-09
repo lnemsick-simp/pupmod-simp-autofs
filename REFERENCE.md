@@ -41,7 +41,7 @@ _Private Classes_
 its service is running.
 
 * **See also**
-autofs.conf
+autofs.conf(5)
 
 #### Parameters
 
@@ -51,23 +51,51 @@ The following parameters are available in the `autofs` class.
 
 Data type: `Integer`
 
-Sets the 'timeout' parameter in the 'autofs' section of /etc/autofs.conf
+Default mount timeout in seconds
+
+* 'timeout' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: 600
+
+##### `master_wait`
+
+Data type: `Optional[Integer]`
+
+Default maximum time to wait in seconds for the master map to become
+available if it cannot be read at program start
+
+* 'master_wait' parameter in the 'autofs' section of /etc/autofs.conf
+
+Default value: `undef`
 
 ##### `negative_timeout`
 
 Data type: `Optional[Integer]`
 
-See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> NEGATIVE_TIMEOUT
+Default timeout for caching failed key lookups
+
+* 'negative_timeout' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: `undef`
+
+##### `mount_verbose`
+
+Data type: `Boolean`
+
+Use the verbose flag when spawning mount
+
+* 'mount_verbose' parameter in the 'autofs' section of /etc/autofs.conf
+
+Default value: `false`
 
 ##### `mount_wait`
 
 Data type: `Optional[Integer]`
 
-See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> MOUNT_WAIT
+Default time to wait for a response from a spawned mount before sending
+it a SIGTERM
+
+* 'mount_wait' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: `undef`
 
@@ -75,7 +103,10 @@ Default value: `undef`
 
 Data type: `Optional[Integer]`
 
-See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> MOUNT_WAIT
+Default time to wait for a response from a spawned umount before sending
+it a SIGTERM
+
+* 'umount_wait' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: `undef`
 
@@ -83,15 +114,30 @@ Default value: `undef`
 
 Data type: `Boolean`
 
-See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> BROWSE_MODE
+Whether maps are browsable
+
+* 'browse_mode' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: `false`
+
+##### `mount_nfs_default_protocol`
+
+Data type: `Integer[3,4]`
+
+Default protocol that mount.nfs uses when performing a mount
+
+* 'mount_nfs_default_protocol' parameter in the 'autofs' section of
+  /etc/autofs.conf
+
+Default value: 4
 
 ##### `append_options`
 
 Data type: `Boolean`
 
-See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> APPEND_OPTIONS
+Whether global options are appended to map entry options
+
+* 'append_options' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: `true`
 
@@ -99,17 +145,94 @@ Default value: `true`
 
 Data type: `Autofs::Logging`
 
-See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> LOGGING
+Default log level
+
+* 'logging' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: 'none'
+
+##### `force_standard_program_map_env`
+
+Data type: `Boolean`
+
+Override the use of a prefix with standard environment variables when a
+program map is executed
+
+* 'force_standard_program_map_env' parameter in the 'autofs' section of
+  /etc/autofs.conf
+
+Default value: `false`
+
+##### `map_hash_table_size`
+
+Data type: `Optional[Integer]`
+
+Set the number of hash table slots
+
+* Should be a power of 2 with a ratio roughly between 1:10 and 1:20 for
+  each map
+* 'map_hash_table_size' parameter in the 'autofs' section of
+  /etc/autofs.conf
+
+Default value: `undef`
+
+##### `use_hostname_for_mounts`
+
+Data type: `Boolean`
+
+NFS mounts where the host name resolves to more than one IP address are
+probed for availability and to establish the order in which mounts to them
+should be tried
+
+* 'use_hostname_for_mounts' parameter in the 'autofs' section of
+  /etc/autofs.conf
+
+Default value: `false`
+
+##### `disable_not_found_message`
+
+Data type: `Boolean`
+
+Turn off not found messages
+
+* 'disable_not_found_message' parameter in the 'autofs' section of
+  /etc/autofs.conf
+
+Default value: `false`
+
+##### `sss_master_map_wait`
+
+Data type: `Optional[Integer]`
+
+Time to wait and retry if sssd returns "no such entry" when starting up
+
+* 'sss_master_map_wait' parameter in the 'autofs' section of
+  /etc/autofs.conf
+
+Default value: `undef`
+
+##### `use_mount_request_log_id`
+
+Data type: `Boolean`
+
+Whether to use a mount request log id so that log entries for specific
+mount requests can be easily identified in logs that have multiple
+concurrent requests
+
+* 'use_mount_request_log_id' parameter in the 'autofs' section of
+  /etc/autofs.conf
+
+Default value: `false`
 
 ##### `ldap_uri`
 
 Data type: `Optional[Array[Simplib::Uri,1]]`
 
-See: auto.master(5) -> LDAP MAPS -> LDAP_TIMEOUT
+An LDAP server URI
 
 * Only applies if `$ldap` is `true`.
+* 'ldap_uri' parameter in the 'autofs' section of /etc/autofs.conf, which
+  can be specified multiple times
 
 Default value: `undef`
 
@@ -117,9 +240,10 @@ Default value: `undef`
 
 Data type: `Optional[Integer]`
 
-See: auto.master(5) -> LDAP MAPS -> LDAP_TIMEOUT
+Network response timeout value for the synchronous API calls
 
 * Only applies if `$ldap` is `true`.
+* 'ldap_timeout' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: `undef`
 
@@ -127,9 +251,11 @@ Default value: `undef`
 
 Data type: `Optional[Integer]`
 
-See: auto.master(5) -> LDAP MAPS -> LDAP_NETWORK_TIMEOUT
+Network response timeout
 
 * Only applies if `$ldap` is `true`.
+* 'ldap_network_timeout' parameter in the 'autofs' section of
+  /etc/autofs.conf
 
 Default value: `undef`
 
@@ -137,9 +263,10 @@ Default value: `undef`
 
 Data type: `Optional[Array[String,1]]`
 
-See: auto.master(5) -> LDAP MAPS -> SEARCH_BASE
+Base `dn` to use when searching for a map base `dn`
 
 * Only applies if `$ldap` is `true`.
+* 'search_base' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: `undef`
 
@@ -147,9 +274,10 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-See: auto.master(5) -> LDAP MAPS -> MAP_OBJECT_CLASS
+Map object class
 
 * Only applies if `$ldap` is `true`.
+* 'map_object_class' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: `undef`
 
@@ -157,9 +285,10 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-See: auto.master(5) -> LDAP MAPS -> ENTRY_OBJECT_CLASS
+Map entry object class
 
 * Only applies if `$ldap` is `true`.
+* 'entry_object_class' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: `undef`
 
@@ -167,7 +296,7 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-See: auto.master(5) -> LDAP MAPS -> MAP_ATTRIBUTE
+attribute used to identify the name of the map to which this entry belongs
 
 * Only applies if `$ldap` is `true`.
 
@@ -177,7 +306,7 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-See: auto.master(5) -> LDAP MAPS -> ENTRY_ATTRIBUTE
+attribute  used  to  identify  a map key
 
 * Only applies if `$ldap` is `true`.
 
@@ -187,22 +316,21 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-See: auto.master(5) -> LDAP MAPS -> VALUE_ATTRIBUTE
+attribute used to identify the value of the map entry
 
 * Only applies if `$ldap` is `true`.
 
 Default value: `undef`
 
-##### `map_hash_table_size`
+##### `auth_conf_file`
 
-Data type: `Optional[Integer]`
+Data type: `Stdlib::Absolutepath`
 
-Set the map cache hash table size
+Location of the ldap authentication configuration file
 
-* Should be a power of 2 with a ratio roughly between 1:10 and 1:20 for
-  each map
+* Only applies if `$ldap` is `true`.
 
-Default value: `undef`
+Default value: '/etc/autofs_ldap_auth.conf'
 
 ##### `automount_use_misc_device`
 
@@ -269,78 +397,6 @@ Data type: `Variant[Enum['simp'],Boolean]`
   * app_pki_ca_dir
 
 Default value: simplib::lookup('simp_options::pki', { 'default_value' => false })
-
-##### `master_wait`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: `undef`
-
-##### `mount_verbose`
-
-Data type: `Boolean`
-
-
-
-Default value: `false`
-
-##### `mount_nfs_default_protocol`
-
-Data type: `Integer[3,4]`
-
-
-
-Default value: 4
-
-##### `force_standard_program_map_env`
-
-Data type: `Boolean`
-
-
-
-Default value: `false`
-
-##### `use_hostname_for_mounts`
-
-Data type: `Boolean`
-
-
-
-Default value: `false`
-
-##### `disable_not_found_message`
-
-Data type: `Boolean`
-
-
-
-Default value: `false`
-
-##### `sss_master_map_wait`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: `undef`
-
-##### `use_mount_request_log_id`
-
-Data type: `Boolean`
-
-
-
-Default value: `false`
-
-##### `auth_conf_file`
-
-Data type: `Stdlib::Absolutepath`
-
-
-
-Default value: '/etc/autofs_ldap_auth.conf'
 
 ##### `custom_autofs_conf_options`
 

@@ -258,7 +258,7 @@ describe 'autofs' do
           let(:params) {{
             :maps => {
               'apps' => {
-                'mount_point' => '/apps',
+                'mount_point' => '/net/apps',
                 'mappings'    => [
                   {
                     'key'      => 'app1',
@@ -276,9 +276,9 @@ describe 'autofs' do
                 ]
               },
               'data' => {
-                'mount_point' => '/data',
+                'mount_point' => '/-',
                 'mappings'    => {
-                  'key'      => '/net/apps',
+                  'key'      => '/net/data',
                   'location' => '1.2.3.4:/exports/data'
                 }
               },

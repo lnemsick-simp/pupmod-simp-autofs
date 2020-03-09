@@ -1,87 +1,166 @@
 # @summary Manage the installation and configuration of `autofs` and ensure
 # its service is running.
 #
-# @see autofs.conf
+# @see autofs.conf(5)
 #
 # @param timeout
-#   Sets the 'timeout' parameter in the 'autofs' section of /etc/autofs.conf
+#   Default mount timeout in seconds
+#
+#   * 'timeout' parameter in the 'autofs' section of /etc/autofs.conf
+#
+# @param master_wait
+#   Default maximum time to wait in seconds for the master map to become
+#   available if it cannot be read at program start
+#
+#   * 'master_wait' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param negative_timeout
-#   See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> NEGATIVE_TIMEOUT
+#   Default timeout for caching failed key lookups
+#
+#   * 'negative_timeout' parameter in the 'autofs' section of /etc/autofs.conf
+#
+# @param mount_verbose
+#   Use the verbose flag when spawning mount
+#
+#   * 'mount_verbose' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param mount_wait
-#   See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> MOUNT_WAIT
+#   Default time to wait for a response from a spawned mount before sending
+#   it a SIGTERM
+#
+#   * 'mount_wait' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param umount_wait
-#   See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> MOUNT_WAIT
+#   Default time to wait for a response from a spawned umount before sending
+#   it a SIGTERM
+#
+#   * 'umount_wait' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param browse_mode
-#   See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> BROWSE_MODE
+#   Whether maps are browsable
+#
+#   * 'browse_mode' parameter in the 'autofs' section of /etc/autofs.conf
+#
+# @param mount_nfs_default_protocol
+#   Default protocol that mount.nfs uses when performing a mount
+#
+#   * 'mount_nfs_default_protocol' parameter in the 'autofs' section of
+#     /etc/autofs.conf
 #
 # @param append_options
-#   See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> APPEND_OPTIONS
+#   Whether global options are appended to map entry options
+#
+#   * 'append_options' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param logging
-#   See: auto.master(5) -> GENERAL SYSTEM DEFAULTS CONFIGURATION -> LOGGING
+#   Default log level
+#
+#   * 'logging' parameter in the 'autofs' section of /etc/autofs.conf
+#
+# @param force_standard_program_map_env
+#   Override the use of a prefix with standard environment variables when a
+#   program map is executed
+#
+#   * 'force_standard_program_map_env' parameter in the 'autofs' section of
+#     /etc/autofs.conf
+#
+# @param map_hash_table_size
+#   Set the number of hash table slots
+#
+#   * Should be a power of 2 with a ratio roughly between 1:10 and 1:20 for
+#     each map
+#   * 'map_hash_table_size' parameter in the 'autofs' section of
+#     /etc/autofs.conf
+#
+# @param use_hostname_for_mounts
+#   NFS mounts where the host name resolves to more than one IP address are
+#   probed for availability and to establish the order in which mounts to them
+#   should be tried
+#
+#   * 'use_hostname_for_mounts' parameter in the 'autofs' section of
+#     /etc/autofs.conf
+#
+# @param disable_not_found_message
+#   Turn off not found messages
+#
+#   * 'disable_not_found_message' parameter in the 'autofs' section of
+#     /etc/autofs.conf
+#
+# @param sss_master_map_wait
+#   Time to wait and retry if sssd returns "no such entry" when starting up
+#
+#   * 'sss_master_map_wait' parameter in the 'autofs' section of
+#     /etc/autofs.conf
+#
+# @param use_mount_request_log_id
+#   Whether to use a mount request log id so that log entries for specific
+#   mount requests can be easily identified in logs that have multiple
+#   concurrent requests
+#
+#   * 'use_mount_request_log_id' parameter in the 'autofs' section of
+#     /etc/autofs.conf
 #
 # @param ldap_uri
-#   See: auto.master(5) -> LDAP MAPS -> LDAP_TIMEOUT
+#   An LDAP server URI
 #
 #   * Only applies if `$ldap` is `true`.
+#   * 'ldap_uri' parameter in the 'autofs' section of /etc/autofs.conf, which
+#     can be specified multiple times
 #
 # @param ldap_timeout
-#   See: auto.master(5) -> LDAP MAPS -> LDAP_TIMEOUT
+#   Network response timeout value for the synchronous API calls
 #
 #   * Only applies if `$ldap` is `true`.
-#
+#   * 'ldap_timeout' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param ldap_network_timeout
-#   See: auto.master(5) -> LDAP MAPS -> LDAP_NETWORK_TIMEOUT
+#   Network response timeout
 #
 #   * Only applies if `$ldap` is `true`.
+#   * 'ldap_network_timeout' parameter in the 'autofs' section of
+#     /etc/autofs.conf
 #
 #
 # @param search_base
-#   See: auto.master(5) -> LDAP MAPS -> SEARCH_BASE
+#   Base `dn` to use when searching for a map base `dn`
 #
 #   * Only applies if `$ldap` is `true`.
-#
+#   * 'search_base' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param map_object_class
-#   See: auto.master(5) -> LDAP MAPS -> MAP_OBJECT_CLASS
+#   Map object class
 #
 #   * Only applies if `$ldap` is `true`.
+#   * 'map_object_class' parameter in the 'autofs' section of /etc/autofs.conf
 #
 #
 # @param entry_object_class
-#   See: auto.master(5) -> LDAP MAPS -> ENTRY_OBJECT_CLASS
+#   Map entry object class
 #
 #   * Only applies if `$ldap` is `true`.
-#
+#   * 'entry_object_class' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param map_attribute
-#   See: auto.master(5) -> LDAP MAPS -> MAP_ATTRIBUTE
+#   attribute used to identify the name of the map to which this entry belongs
 #
 #   * Only applies if `$ldap` is `true`.
 #
 #
 # @param entry_attribute
-#   See: auto.master(5) -> LDAP MAPS -> ENTRY_ATTRIBUTE
+#   attribute  used  to  identify  a map key
 #
 #   * Only applies if `$ldap` is `true`.
 #
 #
 # @param value_attribute
-#   See: auto.master(5) -> LDAP MAPS -> VALUE_ATTRIBUTE
+#   attribute used to identify the value of the map entry
 #
 #   * Only applies if `$ldap` is `true`.
 #
+# @param auth_conf_file
+#   Location of the ldap authentication configuration file
 #
-# @param map_hash_table_size
-#   Set the map cache hash table size
-#
-#   * Should be a power of 2 with a ratio roughly between 1:10 and 1:20 for
-#     each map
+#   * Only applies if `$ldap` is `true`.
 #
 # @param automount_use_misc_device
 #   If the kernel supports using the autofs miscellanous device, and you wish
