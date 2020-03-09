@@ -56,7 +56,7 @@ define autofs::map::master (
     }
   }
   else {
-   if !($mount_point and $map_name) {
+    if !($mount_point and $map_name) {
       fail('You must specify either "$content" or "$mount_point" and "$map_name"')
     }
 
