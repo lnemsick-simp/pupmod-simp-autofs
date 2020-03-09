@@ -1,6 +1,6 @@
 # @summary Add a `$name.autofs` master entry file to `$autofs::master_conf_dir`
 #
-# THIS IS DEPRECATED.  Use `autofs::master` or `autofs::map` instead.
+# THIS IS DEPRECATED.  Use `autofs::masterfile` or `autofs::map` instead.
 #
 # @see auto.master(5)
 #
@@ -40,8 +40,8 @@ define autofs::map::master (
   Optional[String]               $content     = undef
 ) {
 
- deprecation('autofs::map::master',
-   'autofs::map::master is deprecated. Use autofs::masterfile or autofs::map instead')
+  deprecation('autofs::map::master',
+    'autofs::map::master is deprecated. Use autofs::masterfile or autofs::map instead')
 
   if $content {
     include 'autofs'

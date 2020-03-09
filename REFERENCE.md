@@ -19,7 +19,9 @@ _Private Classes_
 
 **Defined types**
 
-* [`autofs::map`](#autofsmap): 
+* [`autofs::map`](#autofsmap): Add an auto.master entry file and map file
+* [`autofs::map::entry`](#autofsmapentry): Add an entry to the map specified in ``$name``  THIS IS DEPRECATED.  Use `autofs::mapfile` or `autofs::map` instead.  The map file will be cr
+* [`autofs::map::master`](#autofsmapmaster): Add a `$name.autofs` master entry file to `$autofs::master_conf_dir`
 * [`autofs::mapfile`](#autofsmapfile): Create an autofs map file
 * [`autofs::masterfile`](#autofsmasterfile): Add a `$name.autofs` master entry file to `$autofs::master_conf_dir`
 
@@ -443,11 +445,26 @@ Default value: "${app_pki_dir}/public/${::fqdn}.pub"
 
 ### autofs::map
 
-The autofs::map class.
+Creates an autofs::masterfile and an autofs::mapfile resource for $name.
+
+* The auto.master entry will have the default (implied) 'map_type' of 'file'
+  and the default (implied) 'map_format' of 'sun' and its file will be
+  located in `${autofs::master_conf_dir}`
+* The map file will be in 'sun' format and be located in `${autofs::maps_dir}`
 
 #### Parameters
 
 The following parameters are available in the `autofs::map` defined type.
+
+##### `name`
+
+Basename of the map
+
+* Corresponding auto.master entry filename will be
+  `${autofs::master_conf_dir}/${name}.autofs`
+* Corresponding map file will be named `${autofs::maps_dir}/${name}.map`
+* If $name has any whitespace or '/' characters, those characters will be
+  replaced with '__' in order to create safe filenames
 
 ##### `mount_point`
 
@@ -478,6 +495,138 @@ Single direct mapping or one or more indirect mappings
 * Each mapping specifies a key, a location, and any automounter and/or
   mount options.
 
+### autofs::map::entry
+
+Add an entry to the map specified in ``$name``
+
+THIS IS DEPRECATED.  Use `autofs::mapfile` or `autofs::map` instead.
+
+The map file will be created as ``${autofs::maps_dir}/$target.map``.
+
+You will need to create an appropriate ``autofs::masterfile`` entry for
+this to be activated.
+
+* **See also**
+autofs(5)
+
+#### Parameters
+
+The following parameters are available in the `autofs::map::entry` defined type.
+
+##### `name`
+
+In this case, ``$name`` is mapped to the ``key`` entry as described in
+``autofs(5)``
+
+* The special wildcard entry ``*`` is specified by entering the name as
+  ``wildcard-<anything_unique>``
+
+##### `target`
+
+Data type: `Optional[String]`
+
+The name (**not the full path**) of the map file under which you would like
+this entry placed
+
+* Required unless ``$content`` is set
+
+Default value: `undef`
+
+##### `location`
+
+Data type: `Optional[String]`
+
+The location that should be mounted
+
+* Required unless ``$content`` is set
+* This should be the full path on the remote server
+    * Example: ``1.2.3.4:/my/files``
+* See ``autofs(5)`` for details
+
+Default value: `undef`
+
+##### `options`
+
+Data type: `Optional[String]`
+
+The NFS ``options`` that you would like to add to your map
+
+Default value: `undef`
+
+##### `content`
+
+Data type: `Optional[String]`
+
+Use this content, without validation, ignoring all other options
+
+Default value: `undef`
+
+### autofs::map::master
+
+THIS IS DEPRECATED.  Use `autofs::masterfile` or `autofs::map` instead.
+
+* **See also**
+auto.master(5)
+
+#### Parameters
+
+The following parameters are available in the `autofs::map::master` defined type.
+
+##### `mount_point`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+See auto.master(5) -> FORMAT -> mount-point
+
+* Required unless ``$content`` is set
+
+Default value: `undef`
+
+##### `map_name`
+
+Data type: `Optional[String]`
+
+See auto.master(5) -> FORMAT -> map
+
+* Required unless ``$content`` is set
+* $map_type[file|program]      => Absolute Path
+* $map_type[yp|nisplus|hesiod] => String
+* $map_type[ldap|ldaps]        => LDAP DN
+
+Default value: `undef`
+
+##### `map_type`
+
+Data type: `Optional[Autofs::Maptype]`
+
+See auto.master(5) -> FORMAT -> map-type
+
+Default value: `undef`
+
+##### `map_format`
+
+Data type: `Optional[Enum['sun','hesiod']]`
+
+See auto.master(5) -> FORMAT -> format
+
+Default value: `undef`
+
+##### `options`
+
+Data type: `Optional[String]`
+
+See auto.master(5) -> FORMAT -> options
+
+Default value: `undef`
+
+##### `content`
+
+Data type: `Optional[String]`
+
+Ignore all other parameters and use this content without validation
+
+Default value: `undef`
+
 ### autofs::mapfile
 
 You will need to create an corresponding `autofs::masterfile` entry for this
@@ -492,7 +641,7 @@ autofs(5)
 ##### Create an autofs map file for a direct map
 
 ```puppet
-autofs::mapfile('/etc/autofs.maps.simp.d/apps.map':
+autofs::mapfile('apps':
  mappings => {
    'key'      => '/net/apps',
    'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
@@ -503,7 +652,7 @@ autofs::mapfile('/etc/autofs.maps.simp.d/apps.map':
 ##### Create an autofs map file for an indirect map with one mapping
 
 ```puppet
-autofs::mapfile('/etc/autofs.maps.simp.d/home.map':
+autofs::mapfile('home':
  mappings => [
    {
      'key'      => '*',
@@ -516,7 +665,7 @@ autofs::mapfile('/etc/autofs.maps.simp.d/home.map':
 ##### Create an autofs map file for an indirect map with mutiple mappings
 
 ```puppet
-autofs::mapfile('/etc/autofs.maps.simp.d/apps.map':
+autofs::mapfile('apps':
  mappings => [
    {
      'key'      => 'app1
@@ -537,7 +686,10 @@ The following parameters are available in the `autofs::mapfile` defined type.
 
 ##### `name`
 
-Fully qualified path of the map file
+Base name of the map excluding the path and the `.map` suffix
+
+* If $name has any whitespace or '/' characters, those characters will be
+  replaced with '__' in order to create safe filenames
 
 ##### `mappings`
 
@@ -550,12 +702,22 @@ Single direct mapping or one or more indirect mappings
 * Any change to a direct map will trigger a reload of the autofs service.
   This is not necessary for an indirect map.
 
+##### `maps_dir`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+When unset defaults to `autofs::maps_dir`
+
+Default value: `undef`
+
 ### autofs::masterfile
 
-FIXME comment needs an update?
-If you're using the `autofs::map::entry` define, remember that its
-`$target` variable translates to '/etc/autofs/$target.map' which is what
-you should enter for `$map` below.
+This will only create the autofs master entry file.
+* If the map type is 'file', you will need to create the map file using
+  `autofs::mapfile`.  Alternatively, use `autofs::map` which will create both
+  the master entry file and the map file.
+* If the map type is 'program', you will need to ensure the specified
+  executable is available and has the appropriate permissions.
 
 * **See also**
 auto.master(5)
@@ -563,6 +725,14 @@ auto.master(5)
 #### Parameters
 
 The following parameters are available in the `autofs::masterfile` defined type.
+
+##### `name`
+
+Base name of the autofs master entry file excluding the path and the
+`.autofs` suffix
+
+* If $name has any whitespace or '/' characters, those characters will be
+  replaced with '__' in order to create safe filenames
 
 ##### `mount_point`
 

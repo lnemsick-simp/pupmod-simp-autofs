@@ -1,9 +1,11 @@
 # Add an entry to the map specified in ``$name``
 #
-# The map file will be created as ``/etc/autofs/$target.map``.
+# THIS IS DEPRECATED.  Use `autofs::mapfile` or `autofs::map` instead.
 #
-# You will need to create an appropriate ``map::master`` entry for this to be
-# activated.
+# The map file will be created as ``${autofs::maps_dir}/$target.map``.
+#
+# You will need to create an appropriate ``autofs::masterfile`` entry for
+# this to be activated.
 #
 # @see autofs(5)
 #
@@ -34,7 +36,7 @@
 # @param content
 #   Use this content, without validation, ignoring all other options
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors
 #
 define autofs::map::entry (
   Optional[String] $target   = undef,
@@ -42,6 +44,11 @@ define autofs::map::entry (
   Optional[String] $options  = undef,
   Optional[String] $content  = undef
 ) {
+
+  deprecation('autofs::map::entry',
+    'autofs::map::entry is deprecated. Use autofs::mapfile or autofs::map instead')
+
+  simplib::assert_optional_dependency($module_name, 'puppetlabs/concat')
 
   if $name =~ /^wildcard(-|$)/ {
     $_key = '*'
@@ -61,19 +68,28 @@ define autofs::map::entry (
     $_content = "${_key}\t${options}\t${location}"
   }
 
-  ensure_resource('concat',"/etc/autofs/${target}.map",
+  # make sure file in old location is removed
+  file { "/etc/autofs/${target}.map":
+    ensure => absent
+  }
+
+  include 'autofs'
+
+  ensure_resource('concat',"${autofs::maps_dir}/${target}.map",
     {
       owner          => 'root',
       group          => 'root',
       mode           => '0640',
       ensure_newline => true,
       warn           => true,
-      notify         => Class['autofs::service']
+      # This is only needed for direct maps, but we don't know
+      # what kind of map this is.
+      notify         => Exec['autofs_reload']
     }
   )
 
   concat::fragment { "autofs_${target}_${name}":
-    target  => "/etc/autofs/${target}.map",
+    target  => "${autofs::maps_dir}/${target}.map",
     content => $_content
   }
 }
