@@ -32,7 +32,8 @@ class autofs::config {
     owner   => 'root',
     group   => 'root',
     mode    => '0640',
-    # will default to seltype of /etc/auto.master (bin_t) if not set
+    # Needs to match the seltype of /etc/auto.master.d.  Will default to
+    # seltype of /etc/auto.master (bin_t) if not set here.
     seltype => 'etc_t',
     recurse => true,
     purge   => true
