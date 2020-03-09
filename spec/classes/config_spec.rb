@@ -35,7 +35,7 @@ describe 'autofs' do
           it { is_expected.to create_file('/etc/sysconfig/autofs').with( {
             :owner   => 'root',
             :group   => 'root',
-            :mode    => '0640',
+            :mode    => '0644',
             :content => <<~EOM
               # This file is managed by Puppet (simp-autofs module). Changes will be
               # overwritten at the next Puppet run.
@@ -46,7 +46,7 @@ describe 'autofs' do
           it { is_expected.to create_file('/etc/auto.master').with( {
             :owner   => 'root',
             :group   => 'root',
-            :mode    => '0640',
+            :mode    => '0644',
             :content => <<~EOM
               # This file is managed by Puppet (simp-autofs module). Changes will be
               # overwritten at the next Puppet run.
@@ -65,6 +65,7 @@ describe 'autofs' do
             :owner   => 'root',
             :group   => 'root',
             :mode    => '0640',
+            :seltype => 'etc_t',
             :recurse => true,
             :purge   => true
           } ) }

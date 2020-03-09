@@ -46,8 +46,10 @@ describe 'basic autofs' do
         }
       },
       # indirect mount with wildcard key and key substitution
-      'home' => {
-        'mount_point'    => '/home',
+      # Don't use /home or vagrant's home directory will be
+      # masked and you won't be able to login!
+      'home.new' => {
+        'mount_point'    => '/home.new',
         'master_options' => 'strictexpire --strict',
         'mappings'       => [ {
           'key'      => '*',
@@ -65,8 +67,8 @@ describe 'basic autofs' do
     '/net/apps/apps2/test_file',
     '/net/apps/apps3/test_file',
     '/net/data/test_file',
-    '/home/user1/test_file',
-    '/home/user2/test_file'
+    '/home.new/user1/test_file',
+    '/home.new/user2/test_file'
   ] }
 
   context 'autofs clients' do

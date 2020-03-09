@@ -16,14 +16,14 @@ class autofs::config {
   file { '/etc/sysconfig/autofs':
     owner   => 'root',
     group   => 'root',
-    mode    => '0640',
+    mode    => '0644',
     content => epp("${module_name}/etc/sysconfig/autofs.epp")
   }
 
   file { '/etc/auto.master':
     owner   => 'root',
     group   => 'root',
-    mode    => '0640',
+    mode    => '0644',
     content => epp("${module_name}/etc/auto.master.epp")
   }
 
@@ -32,6 +32,8 @@ class autofs::config {
     owner   => 'root',
     group   => 'root',
     mode    => '0640',
+    # will default to seltype of /etc/auto.master (bin_t) if not set
+    seltype => 'etc_t',
     recurse => true,
     purge   => true
   }

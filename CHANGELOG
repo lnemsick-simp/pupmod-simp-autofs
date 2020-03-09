@@ -12,7 +12,7 @@
   - Added a autofs::map defined type that allows the user to specify all
     the parameters for a 'file' map in once place.  This resource will
     generate the appropriate resources to create both the auto.master entry
-    file and map file.
+    file and the map file.
   - Added autofs::masterfile defined type to replace deprecated
     autofs::master::map
     - autofs::masterfile creates a auto.master entry file in
@@ -23,9 +23,9 @@
   - Added autofs::mapfile defined type to replace deprecated
     autofs::master::entry
     - autofs::mapfile creates a mapfile for a direct mapping or one or
-      more indirect mapping
+      more indirect mappings
     - Unlike autofs::master::entry, it does not have duplicate resource naming
-      problems keys (wildcard or otherwise).
+      problems (wildcard or otherwise).
   - autofs class changes
     - Added the following new autofs service configuration parameters:
       - $master_wait
@@ -48,6 +48,9 @@
         its mapping file.
     - Renamed $options to $automount_options for clarity.
     - Renamed $use_misc_device to $automount_use_misc_device for clarity.
+    - Removed $autofs::master_map_name
+      - This parameter is not exposed in /etc/autofs.conf and does not look
+        like it is intended to be changed.
   - autofs::ldap_auth class changes
     - autofs::ldap_auth is now a private class to ensure the name of the
       configuration file created by this class matches the 'auth_conf_file'
