@@ -125,7 +125,8 @@
 #   Base `dn` to use when searching for a map base `dn`
 #
 #   * Only applies if `$ldap` is `true`.
-#   * 'search_base' parameter in the 'autofs' section of /etc/autofs.conf
+#   * 'search_base' parameter in the 'autofs' section of /etc/autofs.conf,
+#     which can be specified multiple times
 #
 # @param map_object_class
 #   Map object class
@@ -179,7 +180,7 @@
 # @param automount_options
 #   Options to append to the automount application at start time
 #
-#   * See ``automount(8)`` for details
+#   * See automount(8) for details
 #   * 'OPTIONS' environment variable in /etc/sysconfig/autofs
 #
 # @param master_conf_dir

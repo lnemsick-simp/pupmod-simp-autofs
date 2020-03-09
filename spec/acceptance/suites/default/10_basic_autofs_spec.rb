@@ -8,7 +8,7 @@ describe 'basic autofs' do
   server = hosts_with_role( hosts, 'nfs_server' ).first
   clients = hosts_with_role( hosts, 'nfs_client' )
 
-  let(:server_fqdn) { fact_on(nfs_server, 'fqdn') }
+  let(:server_fqdn) { fact_on(server, 'fqdn') }
   let(:client_hieradata) {{
     # Set us up for a basic autofs (no LDAP)
     'simp_options::ldap' => false,

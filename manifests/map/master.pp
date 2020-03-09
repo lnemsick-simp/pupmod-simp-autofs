@@ -7,12 +7,12 @@
 # @param mount_point
 #   See auto.master(5) -> FORMAT -> mount-point
 #
-#   * Required unless ``$content`` is set
+#   * Required unless `$content` is set
 #
 # @param map_name
 #   See auto.master(5) -> FORMAT -> map
 #
-#   * Required unless ``$content`` is set
+#   * Required unless `$content` is set
 #   * $map_type[file|program]      => Absolute Path
 #   * $map_type[yp|nisplus|hesiod] => String
 #   * $map_type[ldap|ldaps]        => LDAP DN

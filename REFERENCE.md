@@ -8,26 +8,26 @@
 _Public Classes_
 
 * [`autofs`](#autofs): Manage the installation and configuration of `autofs` and ensure
-* [`autofs::config::pki`](#autofsconfigpki): This class controls all pki related articles for autofs
+* [`autofs::service`](#autofsservice): Manage autofs service
 
 _Private Classes_
 
 * `autofs::config`: Manages `autofs` global configuration
+* `autofs::config::pki`: Controls all pki related articles for autofs
 * `autofs::install`: Manages installation of autofs
-* `autofs::ldap_auth`: Set up the ``autofs_ldap_auth.conf`` file
-* `autofs::service`: Manage autofs service
+* `autofs::ldap_auth`: Set up the `autofs_ldap_auth.conf` file
 
 **Defined types**
 
 * [`autofs::map`](#autofsmap): Add an auto.master entry file and map file
-* [`autofs::map::entry`](#autofsmapentry): Add an entry to the map specified in ``$name``  THIS IS DEPRECATED.  Use `autofs::mapfile` or `autofs::map` instead.  The map file will be cr
+* [`autofs::map::entry`](#autofsmapentry): Add an entry to the map specified in `$name`
 * [`autofs::map::master`](#autofsmapmaster): Add a `$name.autofs` master entry file to `$autofs::master_conf_dir`
 * [`autofs::mapfile`](#autofsmapfile): Create an autofs map file
 * [`autofs::masterfile`](#autofsmasterfile): Add a `$name.autofs` master entry file to `$autofs::master_conf_dir`
 
 **Data types**
 
-* [`Autofs::Authtype`](#autofsauthtype): 
+* [`Autofs::Authtype`](#autofsauthtype): Preferred authentication mechanism
 * [`Autofs::Directmapping`](#autofsdirectmapping): Single direct file system mapping that can be specified in an autofs map file
 * [`Autofs::Indirectmapping`](#autofsindirectmapping): Single indirect file system mapping that can be specified in an autofs map file
 * [`Autofs::Logging`](#autofslogging): automounter log level
@@ -308,7 +308,8 @@ Data type: `Optional[Array[String,1]]`
 Base `dn` to use when searching for a map base `dn`
 
 * Only applies if `$ldap` is `true`.
-* 'search_base' parameter in the 'autofs' section of /etc/autofs.conf
+* 'search_base' parameter in the 'autofs' section of /etc/autofs.conf,
+  which can be specified multiple times
 
 Default value: `undef`
 
@@ -406,7 +407,7 @@ Data type: `Optional[String]`
 
 Options to append to the automount application at start time
 
-* See ``automount(8)`` for details
+* See automount(8) for details
 * 'OPTIONS' environment variable in /etc/sysconfig/autofs
 
 Default value: `undef`
@@ -493,64 +494,9 @@ Data type: `Variant[Enum['simp'],Boolean]`
 
 Default value: simplib::lookup('simp_options::pki', { 'default_value' => false })
 
-### autofs::config::pki
+### autofs::service
 
-This class controls all pki related articles for autofs
-
-#### Parameters
-
-The following parameters are available in the `autofs::config::pki` class.
-
-##### `pki`
-
-* If 'simp', include SIMP's pki module and use pki::copy to manage
-  application certs in /etc/pki/simp_apps/autofs/x509
-* If true, do *not* include SIMP's pki module, but still use pki::copy
-  to manage certs in /etc/pki/simp_apps/autofs/x509
-* If false, do not include SIMP's pki module and do not use pki::copy
-  to manage certs.  You will need to appropriately assign a subset of:
-  * app_pki_dir
-  * app_pki_key
-  * app_pki_cert
-  * app_pki_ca
-  * app_pki_ca_dir
-
-##### `app_pki_external_source`
-
-Data type: `String`
-
-* If pki = 'simp' or true, this is the directory from which certs will be
-  copied, via pki::copy.  Defaults to /etc/pki/simp/x509.
-
-* If pki = false, this variable has no effect.
-
-Default value: simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509' })
-
-##### `app_pki_dir`
-
-Data type: `Stdlib::Absolutepath`
-
-This variable controls the basepath of $app_pki_key, $app_pki_cert,
-$app_pki_ca, $app_pki_ca_dir, and $app_pki_crl.
-It defaults to /etc/pki/simp_apps/autofs/x509.
-
-Default value: '/etc/pki/simp_apps/autofs/x509'
-
-##### `app_pki_key`
-
-Data type: `Stdlib::Absolutepath`
-
-Path and name of the private SSL key file
-
-Default value: "${app_pki_dir}/private/${::fqdn}.pem"
-
-##### `app_pki_cert`
-
-Data type: `Stdlib::Absolutepath`
-
-Path and name of the public SSL certificate
-
-Default value: "${app_pki_dir}/public/${::fqdn}.pub"
+Manage autofs service
 
 ## Defined types
 
@@ -608,13 +554,11 @@ Single direct mapping or one or more indirect mappings
 
 ### autofs::map::entry
 
-Add an entry to the map specified in ``$name``
-
 THIS IS DEPRECATED.  Use `autofs::mapfile` or `autofs::map` instead.
 
-The map file will be created as ``${autofs::maps_dir}/$target.map``.
+The map file will be created as `${autofs::maps_dir}/$target.map`.
 
-You will need to create an appropriate ``autofs::masterfile`` entry for
+You will need to create an appropriate `autofs::masterfile` entry for
 this to be activated.
 
 * **See also**
@@ -626,11 +570,11 @@ The following parameters are available in the `autofs::map::entry` defined type.
 
 ##### `name`
 
-In this case, ``$name`` is mapped to the ``key`` entry as described in
-``autofs(5)``
+In this case, `$name` is mapped to the `key` entry as described in
+`autofs(5)`
 
-* The special wildcard entry ``*`` is specified by entering the name as
-  ``wildcard-<anything_unique>``
+* The special wildcard entry `*` is specified by entering the name as
+  `wildcard-<anything_unique>`
 
 ##### `target`
 
@@ -639,7 +583,7 @@ Data type: `Optional[String]`
 The name (**not the full path**) of the map file under which you would like
 this entry placed
 
-* Required unless ``$content`` is set
+* Required unless `$content` is set
 
 Default value: `undef`
 
@@ -649,10 +593,10 @@ Data type: `Optional[String]`
 
 The location that should be mounted
 
-* Required unless ``$content`` is set
+* Required unless `$content` is set
 * This should be the full path on the remote server
-    * Example: ``1.2.3.4:/my/files``
-* See ``autofs(5)`` for details
+    * Example: `1.2.3.4:/my/files`
+* See `autofs(5)` for details
 
 Default value: `undef`
 
@@ -660,7 +604,7 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-The NFS ``options`` that you would like to add to your map
+The NFS `options` that you would like to add to your map
 
 Default value: `undef`
 
@@ -689,7 +633,7 @@ Data type: `Optional[Stdlib::Absolutepath]`
 
 See auto.master(5) -> FORMAT -> mount-point
 
-* Required unless ``$content`` is set
+* Required unless `$content` is set
 
 Default value: `undef`
 
@@ -699,7 +643,7 @@ Data type: `Optional[String]`
 
 See auto.master(5) -> FORMAT -> map
 
-* Required unless ``$content`` is set
+* Required unless `$content` is set
 * $map_type[file|program]      => Absolute Path
 * $map_type[yp|nisplus|hesiod] => String
 * $map_type[ldap|ldaps]        => LDAP DN
@@ -904,7 +848,7 @@ Default value: `undef`
 
 ### Autofs::Authtype
 
-The Autofs::Authtype data type.
+Preferred authentication mechanism
 
 Alias of `Enum['GSSAPI', 'LOGIN', 'PLAIN', 'ANONYMOUS', 'DIGEST-MD5', 'EXTERNAL']`
 

@@ -1,6 +1,5 @@
 # @summary Manage autofs service
 #
-# @api private
 # @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors
 #
 class autofs::service {

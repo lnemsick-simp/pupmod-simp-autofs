@@ -1,4 +1,4 @@
-# @summary Set up the ``autofs_ldap_auth.conf`` file
+# @summary Set up the `autofs_ldap_auth.conf` file
 #
 # @param ldap_auth_conf_file
 #   Set the location of the LDAP authentication configuration file
@@ -37,7 +37,7 @@
 #   * The `EXTERNAL` mechanism may be used to authenticate using a client
 #     certificate and requires that `$authrequired` is set to `true` if using SSL
 #     or `$usetls`, `$tlsrequired` and `$authrequired` are all set to `true` if
-#     using TLS, in addition to ``authtype`` being set ``EXTERNAL``
+#     using TLS, in addition to `authtype` being set `EXTERNAL`
 #
 # @param external_cert
 #   This specifies the path of the file containing the client certificate.

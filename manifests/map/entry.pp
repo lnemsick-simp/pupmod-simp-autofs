@@ -1,37 +1,37 @@
-# Add an entry to the map specified in ``$name``
+# @summary Add an entry to the map specified in `$name`
 #
 # THIS IS DEPRECATED.  Use `autofs::mapfile` or `autofs::map` instead.
 #
-# The map file will be created as ``${autofs::maps_dir}/$target.map``.
+# The map file will be created as `${autofs::maps_dir}/$target.map`.
 #
-# You will need to create an appropriate ``autofs::masterfile`` entry for
+# You will need to create an appropriate `autofs::masterfile` entry for
 # this to be activated.
 #
 # @see autofs(5)
 #
 # @param name
-#   In this case, ``$name`` is mapped to the ``key`` entry as described in
-#   ``autofs(5)``
+#   In this case, `$name` is mapped to the `key` entry as described in
+#   `autofs(5)`
 #
-#   * The special wildcard entry ``*`` is specified by entering the name as
-#     ``wildcard-<anything_unique>``
+#   * The special wildcard entry `*` is specified by entering the name as
+#     `wildcard-<anything_unique>`
 #
 # @param target
 #   The name (**not the full path**) of the map file under which you would like
 #   this entry placed
 #
-#   * Required unless ``$content`` is set
+#   * Required unless `$content` is set
 #
 # @param location
 #   The location that should be mounted
 #
-#   * Required unless ``$content`` is set
+#   * Required unless `$content` is set
 #   * This should be the full path on the remote server
-#       * Example: ``1.2.3.4:/my/files``
-#   * See ``autofs(5)`` for details
+#       * Example: `1.2.3.4:/my/files`
+#   * See `autofs(5)` for details
 #
 # @param options
-#   The NFS ``options`` that you would like to add to your map
+#   The NFS `options` that you would like to add to your map
 #
 # @param content
 #   Use this content, without validation, ignoring all other options
