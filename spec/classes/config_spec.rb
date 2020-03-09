@@ -256,10 +256,61 @@ describe 'autofs' do
 
         context 'with maps set' do
           let(:params) {{
+            :maps => {
+              'apps' => {
+                'mount_point' => '/apps',
+                'mappings'    => [
+                  {
+                    'key'      => 'app1',
+                    'location' => '1.2.3.4:/exports/app1'
+                  },
+                  {
+                    'key'      => 'app2',
+                    'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
+                    'location' => '1.2.3.5:/exports/app2'
+                  },
+                  {
+                    'key'      => 'app3',
+                    'location' => '1.2.3.6:/exports/app3'
+                  },
+                ]
+              },
+              'data' => {
+                'mount_point' => '/data',
+                'mappings'    => {
+                  'key'      => '/net/apps',
+                  'location' => '1.2.3.4:/exports/data'
+                }
+              },
+              'home' => {
+                'mount_point'    => '/home',
+                'master_options' => 'strictexpire --strict',
+                'mappings'       => [ {
+                  'key'      => '*',
+                  'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
+                  'location' => '1.2.3.4:/exports/home/&'
+                } ]
+              }
+            }
           }}
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('autofs::config') }
+          it { is_expected.to create_autofs__map('apps').with( {
+            :mount_point => params[:maps]['apps']['mount_point'],
+            :mappings    => params[:maps]['apps']['mappings'],
+          } ) }
+
+          it { is_expected.to create_autofs__map('data').with( {
+            :mount_point => params[:maps]['data']['mount_point'],
+            :mappings    => params[:maps]['data']['mappings'],
+          } ) }
+
+          it { is_expected.to create_autofs__map('home').with( {
+            :mount_point    => params[:maps]['home']['mount_point'],
+            :master_options => params[:maps]['home']['master_options'],
+            :mappings       => params[:maps]['home']['mappings'],
+          } ) }
         end
       end
     end

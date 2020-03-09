@@ -51,7 +51,7 @@ class autofs::config {
 
   $autofs::maps.each |String $map_name, Autofs::Mapspec $map_spec| {
     autofs::map { $map_name:
-      * => $master_spec
+      * => $map_spec
     }
   }
 }

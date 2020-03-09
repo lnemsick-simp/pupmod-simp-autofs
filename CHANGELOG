@@ -43,6 +43,9 @@
     - Added $maps_dir to specify the location of SIMP-managed maps and
       changed the directory name from /etc/autofs to /etc/autofs.maps.simp.d
       for clarity.
+    - Added $maps to allow users to specifie 'file' type maps in Hieradata.
+      - Each map specifies the contents of an autofs master entry file and
+        its mapping file.
     - Renamed $options to $automount_options for clarity.
     - Renamed $use_misc_device to $automount_use_misc_device for clarity.
   - autofs::ldap_auth class changes
