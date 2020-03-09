@@ -13,8 +13,8 @@
 #   * Corresponding auto.master entry filename will be
 #     `${autofs::master_conf_dir}/${name}.autofs`
 #   * Corresponding map file will be named `${autofs::maps_dir}/${name}.map`
-#   * If $name has any whitespace or '/' characters, those will be replaced
-#     with '__' in order to create safe filenames
+#   * If $name has any whitespace or '/' characters, those characters will be
+#     replaced with '__' in order to create safe filenames
 #
 # @param mount_point
 #   Base location for the autofs filesystem to be mounted
@@ -45,10 +45,7 @@ define autofs::map(
   include 'autofs'
 
   $_safe_name = regsubst($name, '(/|\s)', '__', 'G')
-
-  autofs::mapfile { $_safe_name:
-    mappings => $mappings
-  }
+  $_map_filename = "${autofs::maps_dir}/${_safe_name}.map"
 
   autofs::masterfile { $_safe_name:
     mount_point => $mount_point,
@@ -56,5 +53,10 @@ define autofs::map(
     options     => $master_options
   }
 
-  Autofs::Mapfile[$_safe_name] -> $Autofs::Masterfile[$_safe_name]
+  autofs::mapfile { $_safe_name:
+    mappings => $mappings,
+    maps_dir => $autofs::maps_dir
+  }
+
+  Autofs::Mapfile[$_safe_name] -> Autofs::Masterfile[$_safe_name]
 }

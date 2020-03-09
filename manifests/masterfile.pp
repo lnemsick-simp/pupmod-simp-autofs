@@ -9,6 +9,13 @@
 #
 # @see auto.master(5)
 #
+# @param name
+#   Base name of the autofs master entry file excluding the path and the
+#   `.autofs` suffix
+#
+#   * If $name has any whitespace or '/' characters, those characters will be
+#     replaced with '__' in order to create safe filenames
+#
 # @param mount_point
 #   Base location for the autofs filesystem to be mounted
 #

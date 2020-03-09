@@ -154,8 +154,38 @@ describe 'autofs::mapfile' do
         let(:map_file) { '/etc/maps.d/apps.map'}
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain_class('autofs') }
-        it { is_expected.to contain_autofs__mapfile(title) }
+        it { is_expected.to contain_file(map_file) }
+        it { is_expected.to contain_file(map_file).that_notifies('Exec[autofs_reload]') }
+      end
+
+      context 'with / in title' do
+        let(:title) { 'net/apps' }
+        let(:params) {{
+          :mappings => {
+            'key'      => '/net/apps',
+            'location' => '1.2.3.4:/exports/apps'
+          }
+        }}
+
+        let(:map_file) { '/etc/autofs.maps.simp.d/net__apps.map'}
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_file(map_file) }
+        it { is_expected.to contain_file(map_file).that_notifies('Exec[autofs_reload]') }
+      end
+
+      context 'with whitespace in title' do
+        let(:title) { 'net apps' }
+        let(:params) {{
+          :mappings => {
+            'key'      => '/net/apps',
+            'location' => '1.2.3.4:/exports/apps'
+          }
+        }}
+
+        let(:map_file) { '/etc/autofs.maps.simp.d/net__apps.map'}
+
+        it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_file(map_file) }
         it { is_expected.to contain_file(map_file).that_notifies('Exec[autofs_reload]') }
       end

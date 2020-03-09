@@ -9,6 +9,9 @@
 # @param name
 #   Base name of the map excluding the path and the `.map` suffix
 #
+#   * If $name has any whitespace or '/' characters, those characters will be
+#     replaced with '__' in order to create safe filenames
+#
 # @param mappings
 #   Single direct mapping or one or more indirect mappings
 #
@@ -69,7 +72,8 @@ define autofs::mapfile (
     $_maps_dir = $maps_dir
   }
 
-  $_map_file = "${_maps_dir}/${name}.map"
+  $_safe_name = regsubst($name, '(/|\s)', '__', 'G')
+  $_map_file = "${_maps_dir}/${_safe_name}.map"
   file { $_map_file:
     owner   => 'root',
     group   => 'root',
