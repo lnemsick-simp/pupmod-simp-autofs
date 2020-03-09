@@ -1,6 +1,7 @@
 # @summary Add an auto.master entry file and map file
 #
 # Creates an autofs::masterfile and an autofs::mapfile resource for $name.
+#
 # * The auto.master entry will have the default (implied) 'map_type' of 'file'
 #   and the default (implied) 'map_format' of 'sun' and its file will be
 #   located in `${autofs::master_conf_dir}`
@@ -12,7 +13,9 @@
 #   * Corresponding auto.master entry filename will be
 #     `${autofs::master_conf_dir}/${name}.autofs`
 #   * Corresponding map file will be named `${autofs::maps_dir}/${name}.map`
-
+#   * If $name has any whitespace or '/' characters, those will be replaced
+#     with '__' in order to create safe filenames
+#
 # @param mount_point
 #   Base location for the autofs filesystem to be mounted
 #
@@ -42,9 +45,8 @@ define autofs::map(
   include 'autofs'
 
   $_safe_name = regsubst($name, '(/|\s)', '__', 'G')
-  $_map_filename = "${autofs::maps_dir}/${_safe_name}.map"
 
-  autofs::mapfile { $_map_filename:
+  autofs::mapfile { $_safe_name:
     mappings => $mappings
   }
 
@@ -54,5 +56,5 @@ define autofs::map(
     options     => $master_options
   }
 
-  Autofs::Mapfile[$_map_filename] -> $Autofs::Masterfile[$_safename]
+  Autofs::Mapfile[$_safe_name] -> $Autofs::Masterfile[$_safe_name]
 }

@@ -1,9 +1,11 @@
 # @summary Add a `$name.autofs` master entry file to `$autofs::master_conf_dir`
 #
-#FIXME comment needs an update?
-# If you're using the `autofs::map::entry` define, remember that its
-# `$target` variable translates to '/etc/autofs/$target.map' which is what
-# you should enter for `$map` below.
+# This will only create the autofs master entry file.
+# * If the map type is 'file', you will need to create the map file using
+#   `autofs::mapfile`.  Alternatively, use `autofs::map` which will create both
+#   the master entry file and the map file.
+# * If the map type is 'program', you will need to ensure the specified
+#   executable is available and has the appropriate permissions.
 #
 # @see auto.master(5)
 #

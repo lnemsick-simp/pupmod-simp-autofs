@@ -8,11 +8,13 @@ class autofs::service {
     ensure     => 'running',
     enable     => true,
     hasstatus  => true,
-    hasrestart => true
+    hasrestart => true,
   }
 
   exec { 'autofs_reload':
     command     => '/usr/bin/systemctl reload autofs',
     refreshonly => true
   }
+
+  Service['autofs'] -> Exec['autofs_reload']
 }
