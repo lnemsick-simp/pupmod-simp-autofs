@@ -38,9 +38,9 @@ describe 'basic autofs' do
       },
       # direct mount
       'data' => {
-        'mount_point' => '/net/data',
+        'mount_point' => '/-',
         'mappings'    => {
-          'key'      => '/net/apps',
+          'key'      => '/net/data',
           'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
           'location' => '#{server_fqdn}:/exports/data'
         }

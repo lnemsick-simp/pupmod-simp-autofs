@@ -141,36 +141,62 @@
 #   * 'entry_object_class' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param map_attribute
-#   attribute used to identify the name of the map to which this entry belongs
+#   Attribute used to identify the name of the map to which this entry belongs
 #
 #   * Only applies if `$ldap` is `true`.
-#
+#   * 'map_attribute' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param entry_attribute
-#   attribute  used  to  identify  a map key
+#   Attribute  used  to  identify  a map key
 #
 #   * Only applies if `$ldap` is `true`.
-#
+#   * 'entry_attribute' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param value_attribute
-#   attribute used to identify the value of the map entry
+#   Attribute used to identify the value of the map entry
 #
 #   * Only applies if `$ldap` is `true`.
+#   * 'value_attribute' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param auth_conf_file
 #   Location of the ldap authentication configuration file
 #
 #   * Only applies if `$ldap` is `true`.
+#   * 'auth_conf_file' parameter in the 'autofs' section of /etc/autofs.conf
+#
+# @param custom_autofs_conf_options
+#   Custom key/value pairs to be set in the 'autofs' section of /etc/autofs.conf
+#
+#   * Useful to add new configuration parameters before they are managed by
+#     this module
+#   * No validation will be done to this configuration.
 #
 # @param automount_use_misc_device
-#   If the kernel supports using the autofs miscellanous device, and you wish
-#   to use it, you must set this configuration option to ``yes`` otherwise it
-#   will not be used
+#   Whether to use autofs miscellanous device when the kernel supports it
+#
+#   * 'USE_MISC_DEVICE' environment variable in /etc/sysconfig/autofs
 #
 # @param automount_options
 #   Options to append to the automount application at start time
 #
 #   * See ``automount(8)`` for details
+#   * 'OPTIONS' environment variable in /etc/sysconfig/autofs
+#
+# @param master_conf_dir
+#   Directory for SIMP-managed auto.master configuration files
+#
+# @param master_include_dirs
+#   Other directories of auto.master configuration files to include
+#
+#   * This module will not manage these directories or their contents.
+#
+# @param maps_dir
+#   Directory for SIMP-managed map files
+#
+# @param maps
+#   Specification of 'file' maps to be configured
+#
+#   * An autofs master entry file and map file will be created for each map
 #
 # @param samba_package_ensure
 #   The value to pass to the `ensure` parameter of the `samba-utils` package.
@@ -197,6 +223,43 @@
 #     * app_pki_cert
 #     * app_pki_ca
 #     * app_pki_ca_dir
+#
+# @example Specify 'file' type maps in hieradata
+#   ---
+#   autofs::maps:
+#     # indirect mount with multiple explicit keys
+#     apps:
+#       mount_point: '/net/apps'
+#       mappings:
+#         # mappings is an Array for indirect maps
+#         - key:      app1
+#           options:  "-fstype=nfs,soft,nfsvers=4,ro"
+#           location: nfs.example.com:/exports/app1
+#         - key:      app2
+#           options:  "-fstype=nfs,soft,nfsvers=4,ro"
+#           location: nfs.example.com:/exports/app2
+#         - key:      app3
+#           options:  "-fstype=nfs,soft,nfsvers=4,ro"
+#           location: nfs.example.com:/exports/app3
+#
+#     # direct mount
+#     data:
+#       mount_point: /-
+#       mappings:
+#         # mappings is a single Hash for direct maps
+#         key:      /net/apps'
+#         options:  "-fstype=nfs,soft,nfsvers=4,ro"
+#         location: nfs.example.com:/exports/data
+#
+#     # indirect mount with wildcard key and key substitution
+#     home:
+#       mount_point:    /home
+#       master_options: "strictexpire --strict"
+#       mappings:
+#         # mappings is an Array for indirect maps
+#         - key:      "*"
+#           options:  "-fstype=nfs,soft,nfsvers=4,rw"
+#           location: "nfs.example.com:/exports/home/&"
 #
 # @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors
 #
@@ -230,14 +293,9 @@ class autofs (
   Hash                            $custom_autofs_conf_options     = {},
   Boolean                         $automount_use_misc_device      = true,
   Optional[String]                $automount_options              = undef,
-
-  #   The primary directory for SIMP-managed auto.master configuration files.
   Stdlib::Absolutepath            $master_conf_dir                = '/etc/auto.master.simp.d',
-  #   Other directories of auto.master configuration files to include
-  #   * This module will not manage these directories or their contents.
   Array[Stdlib::Absolutepath]     $master_include_dirs            = [ '/etc/auto.master.d' ],
   Stdlib::Absolutepath            $maps_dir                       = '/etc/autofs.maps.simp.d',
-# allow user to specify simple 'file' maps in hieradata
   Hash[String,Autofs::Mapspec]    $maps                           = {},
   String                          $samba_package_ensure           = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
   String                          $autofs_package_ensure          = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),

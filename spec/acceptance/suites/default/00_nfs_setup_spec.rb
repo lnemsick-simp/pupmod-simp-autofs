@@ -68,13 +68,11 @@ describe 'NFS setup' do
       }
     } }
 
-    let(:export_dirs) { mount_map.map { |type,info| info[:export_dir] }.flatten }
-    let(:exported_files) { mount_map.map { |type,info| info[:exported_files] }.flatten }
+    let(:export_dirs) { export_mapping.map { |name,info| info[:export_dir] }.flatten }
+    let(:exported_files) { export_mapping.map { |name,info| info[:exported_files] }.flatten }
     let(:file_content_base) { 'This is a test file from' }
     let(:server_manifest) {
       <<~EOM
-        include 'ssh'
-
         file { '#{export_root_path}':
           ensure => 'directory',
           owner  => 'root',
@@ -133,7 +131,10 @@ describe 'NFS setup' do
       apply_manifest_on(server, server_manifest, :catch_failures => true)
     end
 
-    it 'should be idempotent' do
+    it 'should converge' do
+      # on EL8, have to correct selinux type of /exports
+      # TODO:  Set the selinux context in the server manifest
+      apply_manifest_on(server, server_manifest, :catch_failures => true)
       apply_manifest_on(server, server_manifest, :catch_changes => true)
     end
 

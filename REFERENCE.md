@@ -43,6 +43,48 @@ its service is running.
 * **See also**
 autofs.conf(5)
 
+#### Examples
+
+##### Specify 'file' type maps in hieradata
+
+```puppet
+---
+autofs::maps:
+  # indirect mount with multiple explicit keys
+  apps:
+    mount_point: '/net/apps'
+    mappings:
+      # mappings is an Array for indirect maps
+      - key:      app1
+        options:  "-fstype=nfs,soft,nfsvers=4,ro"
+        location: nfs.example.com:/exports/app1
+      - key:      app2
+        options:  "-fstype=nfs,soft,nfsvers=4,ro"
+        location: nfs.example.com:/exports/app2
+      - key:      app3
+        options:  "-fstype=nfs,soft,nfsvers=4,ro"
+        location: nfs.example.com:/exports/app3
+
+  # direct mount
+  data:
+    mount_point: /-
+    mappings:
+      # mappings is a single Hash for direct maps
+      key:      /net/apps'
+      options:  "-fstype=nfs,soft,nfsvers=4,ro"
+      location: nfs.example.com:/exports/data
+
+  # indirect mount with wildcard key and key substitution
+  home:
+    mount_point:    /home
+    master_options: "strictexpire --strict"
+    mappings:
+      # mappings is an Array for indirect maps
+      - key:      "*"
+        options:  "-fstype=nfs,soft,nfsvers=4,rw"
+        location: "nfs.example.com:/exports/home/&"
+```
+
 #### Parameters
 
 The following parameters are available in the `autofs` class.
@@ -296,9 +338,10 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-attribute used to identify the name of the map to which this entry belongs
+Attribute used to identify the name of the map to which this entry belongs
 
 * Only applies if `$ldap` is `true`.
+* 'map_attribute' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: `undef`
 
@@ -306,9 +349,10 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-attribute  used  to  identify  a map key
+Attribute  used  to  identify  a map key
 
 * Only applies if `$ldap` is `true`.
+* 'entry_attribute' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: `undef`
 
@@ -316,9 +360,10 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-attribute used to identify the value of the map entry
+Attribute used to identify the value of the map entry
 
 * Only applies if `$ldap` is `true`.
+* 'value_attribute' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: `undef`
 
@@ -329,16 +374,29 @@ Data type: `Stdlib::Absolutepath`
 Location of the ldap authentication configuration file
 
 * Only applies if `$ldap` is `true`.
+* 'auth_conf_file' parameter in the 'autofs' section of /etc/autofs.conf
 
 Default value: '/etc/autofs_ldap_auth.conf'
+
+##### `custom_autofs_conf_options`
+
+Data type: `Hash`
+
+Custom key/value pairs to be set in the 'autofs' section of /etc/autofs.conf
+
+* Useful to add new configuration parameters before they are managed by
+  this module
+* No validation will be done to this configuration.
+
+Default value: {}
 
 ##### `automount_use_misc_device`
 
 Data type: `Boolean`
 
-If the kernel supports using the autofs miscellanous device, and you wish
-to use it, you must set this configuration option to ``yes`` otherwise it
-will not be used
+Whether to use autofs miscellanous device when the kernel supports it
+
+* 'USE_MISC_DEVICE' environment variable in /etc/sysconfig/autofs
 
 Default value: `true`
 
@@ -349,8 +407,45 @@ Data type: `Optional[String]`
 Options to append to the automount application at start time
 
 * See ``automount(8)`` for details
+* 'OPTIONS' environment variable in /etc/sysconfig/autofs
 
 Default value: `undef`
+
+##### `master_conf_dir`
+
+Data type: `Stdlib::Absolutepath`
+
+Directory for SIMP-managed auto.master configuration files
+
+Default value: '/etc/auto.master.simp.d'
+
+##### `master_include_dirs`
+
+Data type: `Array[Stdlib::Absolutepath]`
+
+Other directories of auto.master configuration files to include
+
+* This module will not manage these directories or their contents.
+
+Default value: [ '/etc/auto.master.d' ]
+
+##### `maps_dir`
+
+Data type: `Stdlib::Absolutepath`
+
+Directory for SIMP-managed map files
+
+Default value: '/etc/autofs.maps.simp.d'
+
+##### `maps`
+
+Data type: `Hash[String,Autofs::Mapspec]`
+
+Specification of 'file' maps to be configured
+
+* An autofs master entry file and map file will be created for each map
+
+Default value: {}
 
 ##### `samba_package_ensure`
 
@@ -397,46 +492,6 @@ Data type: `Variant[Enum['simp'],Boolean]`
   * app_pki_ca_dir
 
 Default value: simplib::lookup('simp_options::pki', { 'default_value' => false })
-
-##### `custom_autofs_conf_options`
-
-Data type: `Hash`
-
-
-
-Default value: {}
-
-##### `master_conf_dir`
-
-Data type: `Stdlib::Absolutepath`
-
-
-
-Default value: '/etc/auto.master.simp.d'
-
-##### `master_include_dirs`
-
-Data type: `Array[Stdlib::Absolutepath]`
-
-
-
-Default value: [ '/etc/auto.master.d' ]
-
-##### `maps_dir`
-
-Data type: `Stdlib::Absolutepath`
-
-
-
-Default value: '/etc/autofs.maps.simp.d'
-
-##### `maps`
-
-Data type: `Hash[String,Autofs::Mapspec]`
-
-
-
-Default value: {}
 
 ### autofs::config::pki
 
