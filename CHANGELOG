@@ -51,6 +51,8 @@
     - Removed $autofs::master_map_name
       - This parameter is not exposed in /etc/autofs.conf and does not look
         like it is intended to be changed.
+    - Changed permissions of /etc/auto.master and /etc/sysconfig/autofs
+      to match those of the delivered RPM.
   - autofs::ldap_auth class changes
     - autofs::ldap_auth is now a private class to ensure the name of the
       configuration file created by this class matches the 'auth_conf_file'
