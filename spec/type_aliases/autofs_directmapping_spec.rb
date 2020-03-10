@@ -24,7 +24,7 @@ describe 'Autofs::Directmapping' do
     context 'invalid key' do
       it 'should fail when key is not a fully qualified path'  do
         struct = {
-          'key'      => ' apps',
+          'key'      => 'apps',
           'location' => 'nfs.example.com:/exports/apps'
         }
         is_expected.to_not allow_value(struct)

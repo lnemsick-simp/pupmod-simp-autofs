@@ -100,7 +100,7 @@ describe 'autofs' do
           ) }
         end
 
-        context 'with authtype=EXTERNAL' do
+        context 'with authtype=EXTERNAL and autofs::pki=false' do
           let(:hieradata) { 'autofs_ldap_auth_authtype_external' }
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('autofs::ldap_auth') }
@@ -117,6 +117,29 @@ describe 'autofs' do
               />
             EOM
           ) }
+
+          it { is_expected.to create_class('autofs::config::pki') }
+
+          # autofs::config::pki class is also trivial, so test it here
+          it { is_expected.to_not create_pki__copy('autofs') }
+        end
+
+        context 'with authtype=EXTERNAL and autofs::pki != false' do
+          let(:hieradata) { 'autofs_ldap_auth_authtype_external' }
+          let(:params) {{
+            :ldap => true,
+            :pki  => 'simp'
+          }}
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_class('autofs::ldap_auth') }
+          it { is_expected.to create_class('autofs::config::pki') }
+
+          # autofs::config::pki class is also trivial, so test it here
+          it { is_expected.to create_pki__copy('autofs').with( {
+            :source => '/etc/pki/simp/x509',
+            :pki    => 'simp'
+          } ) }
         end
       end
     end

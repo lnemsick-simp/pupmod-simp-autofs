@@ -33,7 +33,7 @@ describe 'basic autofs' do
             'key'      => 'latest',
             'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
             'location' => "#{server_fqdn}:/exports/apps3"
-          },
+          }
         ]
       },
       # direct mount
