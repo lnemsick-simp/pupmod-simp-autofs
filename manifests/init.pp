@@ -228,27 +228,12 @@
 # @example Specify 'file' type maps in hieradata
 #   ---
 #   autofs::maps:
-#     # indirect mount with multiple explicit keys
-#     apps:
-#       mount_point: '/net/apps'
-#       mappings:
-#         # mappings is an Array for indirect maps
-#         - key:      v1
-#           options:  "-fstype=nfs,soft,nfsvers=4,ro"
-#           location: nfs.example.com:/exports/apps1
-#         - key:      v2
-#           options:  "-fstype=nfs,soft,nfsvers=4,ro"
-#           location: nfs.example.com:/exports/apps2
-#         - key:      latest
-#           options:  "-fstype=nfs,soft,nfsvers=4,ro"
-#           location: nfs.example.com:/exports/apps3
-#
 #     # direct mount
 #     data:
 #       mount_point: /-
 #       mappings:
 #         # mappings is a single Hash for direct maps
-#         key:      /net/apps
+#         key:      /net/data
 #         options:  "-fstype=nfs,soft,nfsvers=4,ro"
 #         location: nfs.example.com:/exports/data
 #
@@ -261,6 +246,21 @@
 #         - key:      "*"
 #           options:  "-fstype=nfs,soft,nfsvers=4,rw"
 #           location: "nfs.example.com:/exports/home/&"
+#
+#     # indirect mount with multiple, explicit keys
+#     apps:
+#       mount_point: '/net/apps'
+#       mappings:
+#         - key:      v1
+#           options:  "-fstype=nfs,soft,nfsvers=4,ro"
+#           location: nfs.example.com:/exports/apps1
+#         - key:      v2
+#           options:  "-fstype=nfs,soft,nfsvers=4,ro"
+#           location: nfs.example.com:/exports/apps2
+#         - key:      latest
+#           options:  "-fstype=nfs,soft,nfsvers=4,ro"
+#           location: nfs.example.com:/exports/apps3
+#
 #
 # @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors
 #

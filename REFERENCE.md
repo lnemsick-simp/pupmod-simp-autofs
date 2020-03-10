@@ -19,11 +19,11 @@ _Private Classes_
 
 **Defined types**
 
-* [`autofs::map`](#autofsmap): Add an auto.master entry file and map file
+* [`autofs::map`](#autofsmap): Create an auto.master entry file and its corresponding map file
 * [`autofs::map::entry`](#autofsmapentry): Add an entry to the map specified in `$name`
 * [`autofs::map::master`](#autofsmapmaster): Add a `$name.autofs` master entry file to `$autofs::master_conf_dir`
 * [`autofs::mapfile`](#autofsmapfile): Create an autofs map file
-* [`autofs::masterfile`](#autofsmasterfile): Add a `$name.autofs` master entry file to `$autofs::master_conf_dir`
+* [`autofs::masterfile`](#autofsmasterfile): Create a `$name.autofs` master entry file in `$autofs::master_conf_dir`
 
 **Data types**
 
@@ -50,27 +50,12 @@ autofs.conf(5)
 ```puppet
 ---
 autofs::maps:
-  # indirect mount with multiple explicit keys
-  apps:
-    mount_point: '/net/apps'
-    mappings:
-      # mappings is an Array for indirect maps
-      - key:      v1
-        options:  "-fstype=nfs,soft,nfsvers=4,ro"
-        location: nfs.example.com:/exports/apps1
-      - key:      v2
-        options:  "-fstype=nfs,soft,nfsvers=4,ro"
-        location: nfs.example.com:/exports/apps2
-      - key:      latest
-        options:  "-fstype=nfs,soft,nfsvers=4,ro"
-        location: nfs.example.com:/exports/apps3
-
   # direct mount
   data:
     mount_point: /-
     mappings:
       # mappings is a single Hash for direct maps
-      key:      /net/apps
+      key:      /net/data
       options:  "-fstype=nfs,soft,nfsvers=4,ro"
       location: nfs.example.com:/exports/data
 
@@ -83,6 +68,20 @@ autofs::maps:
       - key:      "*"
         options:  "-fstype=nfs,soft,nfsvers=4,rw"
         location: "nfs.example.com:/exports/home/&"
+
+  # indirect mount with multiple, explicit keys
+  apps:
+    mount_point: '/net/apps'
+    mappings:
+      - key:      v1
+        options:  "-fstype=nfs,soft,nfsvers=4,ro"
+        location: nfs.example.com:/exports/apps1
+      - key:      v2
+        options:  "-fstype=nfs,soft,nfsvers=4,ro"
+        location: nfs.example.com:/exports/apps2
+      - key:      latest
+        options:  "-fstype=nfs,soft,nfsvers=4,ro"
+        location: nfs.example.com:/exports/apps3
 ```
 
 #### Parameters
@@ -502,12 +501,69 @@ Manage autofs service
 
 ### autofs::map
 
-Creates an autofs::masterfile and an autofs::mapfile resource for $name.
+Creates a pair of `autofs::masterfile` and `autofs::mapfile` resources for
+`$name`.
 
-* The auto.master entry will have the default (implied) 'map_type' of 'file'
-  and the default (implied) 'map_format' of 'sun' and its file will be
-  located in `${autofs::master_conf_dir}`
-* The map file will be in 'sun' format and be located in `${autofs::maps_dir}`
+* The auto.master entry will have the default (implied) 'map_type' of 'file',
+  the default (implied) 'map_format' of 'sun', and be written to file in
+  `${autofs::master_conf_dir}`.
+* The corresponding map file will be in 'sun' format and be located in
+  `${autofs::maps_dir}`.
+
+#### Examples
+
+##### Create an autofs master and map files for a direct map
+
+```puppet
+autofs::map {'data':
+  mount_point => '/-',
+  mappings    => {
+    'key'      => '/net/data',
+    'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
+    'location' => '1.2.3.4:/exports/data'
+  }
+}
+```
+
+##### Create an autofs master and map files for an indirect map with wildcard key
+
+```puppet
+autofs::map { 'home':
+  mount_point => '/home',
+  mappings    => [
+    {
+      'key'      => '*',
+      'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+      'location' => '1.2.3.4:/exports/home/&'
+    }
+  ]
+}
+```
+
+##### Create an autofs master and map files for an indirect map with multiple keys
+
+```puppet
+autofs::map { 'apps':
+  mount_point => '/apps',
+  mappings    => [
+    {
+      'key'      => 'v1',
+      'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+      'location' => '1.2.3.4:/exports/apps1'
+    },
+    {
+      'key'      => 'v2',
+      'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+      'location' => '1.2.3.4:/exports/apps2'
+    },
+    {
+      'key'      => 'latest',
+      'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+      'location' => '1.2.3.5:/exports/apps2'
+    }
+  ]
+}
+```
 
 #### Parameters
 
@@ -517,10 +573,10 @@ The following parameters are available in the `autofs::map` defined type.
 
 Basename of the map
 
-* Corresponding auto.master entry filename will be
+* auto.master entry filename will be
   `${autofs::master_conf_dir}/${name}.autofs`
 * Corresponding map file will be named `${autofs::maps_dir}/${name}.map`
-* If $name has any whitespace or '/' characters, those characters will be
+* If `$name` has any whitespace or '/' characters, those characters will be
   replaced with '__' in order to create safe filenames
 
 ##### `mount_point`
@@ -719,7 +775,7 @@ autofs::mapfile { 'home':
 }
 ```
 
-##### Create an autofs map file for an indirect map with mutiple mappings
+##### Create an autofs map file for an indirect map with mutiple keys
 
 ```puppet
 autofs::mapfile { 'apps':
@@ -751,7 +807,7 @@ The following parameters are available in the `autofs::mapfile` defined type.
 
 Base name of the map excluding the path and the `.map` suffix
 
-* If $name has any whitespace or '/' characters, those characters will be
+* If `$name` has any whitespace or '/' characters, those characters will be
   replaced with '__' in order to create safe filenames
 
 ##### `mappings`
@@ -776,9 +832,9 @@ Default value: `undef`
 ### autofs::masterfile
 
 This will only create the autofs master entry file.
-* If the map type is 'file', you will need to create the map file using
-  `autofs::mapfile`.  Alternatively, use `autofs::map` which will create both
-  the master entry file and the map file.
+* If the map type is 'file' or unspecified, you will need to create the map
+  file using `autofs::mapfile`.  Alternatively, use `autofs::map` which will
+  create both the master entry file and its map file.
 * If the map type is 'program', you will need to ensure the specified
   executable is available and has the appropriate permissions.
 
@@ -835,7 +891,7 @@ The following parameters are available in the `autofs::masterfile` defined type.
 Base name of the autofs master entry file excluding the path and the
 `.autofs` suffix
 
-* If $name has any whitespace or '/' characters, those characters will be
+* If `$name` has any whitespace or '/' characters, those characters will be
   replaced with '__' in order to create safe filenames
 
 ##### `mount_point`

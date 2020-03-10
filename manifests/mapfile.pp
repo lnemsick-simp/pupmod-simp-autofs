@@ -9,7 +9,7 @@
 # @param name
 #   Base name of the map excluding the path and the `.map` suffix
 #
-#   * If $name has any whitespace or '/' characters, those characters will be
+#   * If `$name` has any whitespace or '/' characters, those characters will be
 #     replaced with '__' in order to create safe filenames
 #
 # @param mappings
@@ -43,7 +43,7 @@
 #     ]
 #   }
 #
-# @example Create an autofs map file for an indirect map with mutiple mappings
+# @example Create an autofs map file for an indirect map with mutiple keys
 #   autofs::mapfile { 'apps':
 #     mappings => [
 #       {

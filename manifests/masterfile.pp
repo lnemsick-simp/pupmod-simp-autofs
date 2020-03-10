@@ -1,9 +1,9 @@
-# @summary Add a `$name.autofs` master entry file to `$autofs::master_conf_dir`
+# @summary Create a `$name.autofs` master entry file in `$autofs::master_conf_dir`
 #
 # This will only create the autofs master entry file.
-# * If the map type is 'file', you will need to create the map file using
-#   `autofs::mapfile`.  Alternatively, use `autofs::map` which will create both
-#   the master entry file and the map file.
+# * If the map type is 'file' or unspecified, you will need to create the map
+#   file using `autofs::mapfile`.  Alternatively, use `autofs::map` which will
+#   create both the master entry file and its map file.
 # * If the map type is 'program', you will need to ensure the specified
 #   executable is available and has the appropriate permissions.
 #
@@ -13,7 +13,7 @@
 #   Base name of the autofs master entry file excluding the path and the
 #   `.autofs` suffix
 #
-#   * If $name has any whitespace or '/' characters, those characters will be
+#   * If `$name` has any whitespace or '/' characters, those characters will be
 #     replaced with '__' in order to create safe filenames
 #
 # @param mount_point
