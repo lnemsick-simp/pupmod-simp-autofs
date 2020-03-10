@@ -73,7 +73,7 @@ variables:
     BEAKER_PUPPET_COLLECTION: 'puppet5'
     MATRIX_RUBY_VERSION: '2.4'
 
-.pup_6: &pup_6
+.pup_6_latest: &pup_6_latest
   image: 'ruby:2.5'
   variables:
     PUPPET_VERSION: '~> 6.0'
@@ -136,7 +136,7 @@ pup5-lint:
   <<: *lint_tests
 
 pup6-lint:
-  <<: *pup_6
+  <<: *pup_6_latest
   <<: *lint_tests
 
 # Unit Tests
@@ -151,7 +151,7 @@ pup5.5.16-unit:
   <<: *unit_tests
 
 pup6-unit:
-  <<: *pup_6
+  <<: *pup_6_latest
   <<: *unit_tests
 
 # Acceptance tests

@@ -53,6 +53,7 @@ jobs:
         - bundle exec rake pkg:compare_latest_tag
         - bundle exec rake pkg:create_tag_changelog
         - bundle exec rake lint
+        - bundle exec rake simp:ci_lint
         - bundle exec puppet module build
 
     - stage: spec
