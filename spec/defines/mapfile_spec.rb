@@ -122,7 +122,7 @@ describe 'autofs::mapfile' do
             {
               'key'      => 'latest',
               'location' => '1.2.3.6:/exports/apps3'
-            },
+            }
           ]
         }}
 

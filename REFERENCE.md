@@ -696,48 +696,51 @@ autofs(5)
 ##### Create an autofs map file for a direct map
 
 ```puppet
-autofs::mapfile('data':
- mappings => {
-   'key'      => '/net/data',
-   'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
-   'location' => '1.2.3.4:/exports/data'
- }
+autofs::mapfile {'data':
+  mappings => {
+    'key'      => '/net/data',
+    'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
+    'location' => '1.2.3.4:/exports/data'
+  }
+}
 ```
 
 ##### Create an autofs map file for an indirect map with wildcard key
 
 ```puppet
-autofs::mapfile('home':
- mappings => [
-   {
-     'key'      => '*',
-     'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-     'location' => '1.2.3.4:/exports/home/&'
-   }
- ]
+autofs::mapfile { 'home':
+  mappings => [
+    {
+      'key'      => '*',
+      'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+      'location' => '1.2.3.4:/exports/home/&'
+    }
+  ]
+}
 ```
 
 ##### Create an autofs map file for an indirect map with mutiple mappings
 
 ```puppet
-autofs::mapfile('apps':
- mappings => [
-   {
-     'key'      => 'v1',
-     'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-     'location' => '1.2.3.4:/exports/apps1'
-   },
-   {
-     'key'      => 'v2',
-     'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-     'location' => '1.2.3.4:/exports/apps2'
-   },
-   {
-     'key'      => 'latest',
-     'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-     'location' => '1.2.3.5:/exports/apps2'
-   }
- ]
+autofs::mapfile { 'apps':
+  mappings => [
+    {
+      'key'      => 'v1',
+      'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+      'location' => '1.2.3.4:/exports/apps1'
+    },
+    {
+      'key'      => 'v2',
+      'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+      'location' => '1.2.3.4:/exports/apps2'
+    },
+    {
+      'key'      => 'latest',
+      'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+      'location' => '1.2.3.5:/exports/apps2'
+    }
+  ]
+}
 ```
 
 #### Parameters
@@ -779,8 +782,52 @@ This will only create the autofs master entry file.
 * If the map type is 'program', you will need to ensure the specified
   executable is available and has the appropriate permissions.
 
+server is set in LDAP config
+  autofs::masterfile { 'home':
+    mount_point => '/home',
+    map_type    => 'ldap'
+    map         => 'ou=auto.indirect,dc=example,dc=com,
+  }
+
 * **See also**
 auto.master(5)
+
+#### Examples
+
+##### Create an autofs master entry file for a direct file map
+
+```puppet
+autofs::masterfile { 'data':
+  mount_point => '/-',
+  map         => '/etc/autofs.maps.simp.d/data'
+}
+```
+
+##### Create an autofs master entry file for an indirect file map
+
+```puppet
+autofs::masterfile { 'home':
+  mount_point => '/home',
+  map         => '/etc/autofs.maps.simp.d/home'
+}
+```
+
+##### Create an autofs master entry file for a program map
+
+```puppet
+autofs::masterfile { 'nfs4':
+  mount_point => '/nfs4',
+  map_type    => 'program',
+  map         => '/usr/sbin/fedfs-map-nfs4',
+  options     => 'nobind'
+}
+```
+
+##### Create an autofs master entry file for a ldap map where the LDAP
+
+```puppet
+
+```
 
 #### Parameters
 

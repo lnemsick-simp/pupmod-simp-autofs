@@ -8,6 +8,14 @@ describe 'NFS setup' do
   server = hosts_with_role( hosts, 'nfs_server' ).first
   clients = hosts_with_role( hosts, 'nfs_client' )
 
+  context 'disable firewalld' do
+    it 'should stop firewalld service' do
+      # OEL test boxes have firewalld running by default and we don't
+      # need to test with the firewall here.
+      on(hosts, 'puppet resource service firewalld ensure=stopped')
+    end
+  end
+
   context 'NFS client set up' do
     let(:client_hieradata) {{
       # Set us up for a barebone NFS (no security features)

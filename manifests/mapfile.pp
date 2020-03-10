@@ -24,42 +24,45 @@
 #   When unset defaults to `autofs::maps_dir`
 #
 # @example Create an autofs map file for a direct map
-#   autofs::mapfile('data':
-#    mappings => {
-#      'key'      => '/net/data',
-#      'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
-#      'location' => '1.2.3.4:/exports/data'
-#    }
+#   autofs::mapfile {'data':
+#     mappings => {
+#       'key'      => '/net/data',
+#       'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
+#       'location' => '1.2.3.4:/exports/data'
+#     }
+#   }
 #
 # @example Create an autofs map file for an indirect map with wildcard key
-#   autofs::mapfile('home':
-#    mappings => [
-#      {
-#        'key'      => '*',
-#        'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-#        'location' => '1.2.3.4:/exports/home/&'
-#      }
-#    ]
+#   autofs::mapfile { 'home':
+#     mappings => [
+#       {
+#         'key'      => '*',
+#         'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+#         'location' => '1.2.3.4:/exports/home/&'
+#       }
+#     ]
+#   }
 #
 # @example Create an autofs map file for an indirect map with mutiple mappings
-#   autofs::mapfile('apps':
-#    mappings => [
-#      {
-#        'key'      => 'v1',
-#        'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-#        'location' => '1.2.3.4:/exports/apps1'
-#      },
-#      {
-#        'key'      => 'v2',
-#        'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-#        'location' => '1.2.3.4:/exports/apps2'
-#      },
-#      {
-#        'key'      => 'latest',
-#        'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-#        'location' => '1.2.3.5:/exports/apps2'
-#      }
-#    ]
+#   autofs::mapfile { 'apps':
+#     mappings => [
+#       {
+#         'key'      => 'v1',
+#         'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+#         'location' => '1.2.3.4:/exports/apps1'
+#       },
+#       {
+#         'key'      => 'v2',
+#         'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+#         'location' => '1.2.3.4:/exports/apps2'
+#       },
+#       {
+#         'key'      => 'latest',
+#         'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+#         'location' => '1.2.3.5:/exports/apps2'
+#       }
+#     ]
+#   }
 #
 # @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors
 #

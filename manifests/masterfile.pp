@@ -50,6 +50,34 @@
 #
 #   * See auto.master(5) -> FORMAT -> options
 #
+# @example Create an autofs master entry file for a direct file map
+#   autofs::masterfile { 'data':
+#     mount_point => '/-',
+#     map         => '/etc/autofs.maps.simp.d/data'
+#   }
+#
+# @example Create an autofs master entry file for an indirect file map
+#   autofs::masterfile { 'home':
+#     mount_point => '/home',
+#     map         => '/etc/autofs.maps.simp.d/home'
+#   }
+#
+# @example Create an autofs master entry file for a program map
+#   autofs::masterfile { 'nfs4':
+#     mount_point => '/nfs4',
+#     map_type    => 'program',
+#     map         => '/usr/sbin/fedfs-map-nfs4',
+#     options     => 'nobind'
+#   }
+#
+# @example Create an autofs master entry file for a ldap map where the LDAP
+# server is set in LDAP config
+#   autofs::masterfile { 'home':
+#     mount_point => '/home',
+#     map_type    => 'ldap'
+#     map         => 'ou=auto.indirect,dc=example,dc=com,
+#   }
+#
 # @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors
 #
 define autofs::masterfile (
