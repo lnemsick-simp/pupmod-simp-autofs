@@ -24,14 +24,14 @@
 #   When unset defaults to `autofs::maps_dir`
 #
 # @example Create an autofs map file for a direct map
-#   autofs::mapfile('apps':
+#   autofs::mapfile('data':
 #    mappings => {
-#      'key'      => '/net/apps',
+#      'key'      => '/net/data',
 #      'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
-#      'location' => '1.2.3.4:/exports/apps'
+#      'location' => '1.2.3.4:/exports/data'
 #    }
 #
-# @example Create an autofs map file for an indirect map with one mapping
+# @example Create an autofs map file for an indirect map with wildcard key
 #   autofs::mapfile('home':
 #    mappings => [
 #      {
@@ -45,14 +45,19 @@
 #   autofs::mapfile('apps':
 #    mappings => [
 #      {
-#        'key'      => 'app1
+#        'key'      => 'v1',
 #        'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-#        'location' => '1.2.3.4:/exports/app1'
+#        'location' => '1.2.3.4:/exports/apps1'
 #      },
 #      {
-#        'key'      => 'app2
+#        'key'      => 'v2',
 #        'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-#        'location' => '1.2.3.5:/exports/app2'
+#        'location' => '1.2.3.4:/exports/apps2'
+#      },
+#      {
+#        'key'      => 'latest',
+#        'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+#        'location' => '1.2.3.5:/exports/apps2'
 #      }
 #    ]
 #

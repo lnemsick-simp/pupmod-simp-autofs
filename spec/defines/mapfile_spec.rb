@@ -111,17 +111,17 @@ describe 'autofs::mapfile' do
         let(:params) {{
           :mappings => [
             {
-              'key'      => 'app1',
-              'location' => '1.2.3.4:/exports/app1'
+              'key'      => 'v1',
+              'location' => '1.2.3.4:/exports/apps1'
             },
             {
-              'key'      => 'app2',
+              'key'      => 'v2',
               'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
-              'location' => '1.2.3.5:/exports/app2'
+              'location' => '1.2.3.5:/exports/apps2'
             },
             {
-              'key'      => 'app3',
-              'location' => '1.2.3.6:/exports/app3'
+              'key'      => 'latest',
+              'location' => '1.2.3.6:/exports/apps3'
             },
           ]
         }}
@@ -132,9 +132,9 @@ describe 'autofs::mapfile' do
           <<~EOM
             # This file is managed by Puppet (simp-autofs module).  Changes will be
             # overwritten at the next puppet run.
-            app1    1.2.3.4:/exports/app1
-            app2  -fstype=nfs,soft,nfsvers=4,ro  1.2.3.5:/exports/app2
-            app3    1.2.3.6:/exports/app3
+            v1    1.2.3.4:/exports/apps1
+            v2  -fstype=nfs,soft,nfsvers=4,ro  1.2.3.5:/exports/apps2
+            latest    1.2.3.6:/exports/apps3
           EOM
         ) }
 

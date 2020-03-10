@@ -74,10 +74,11 @@ describe 'NFS setup' do
     let(:server_manifest) {
       <<~EOM
         file { '#{export_root_path}':
-          ensure => 'directory',
-          owner  => 'root',
-          group  => 'root',
-          mode   => '0644'
+          ensure  => 'directory',
+          owner   => 'root',
+          group   => 'root',
+          mode    => '0644',
+          seltype => 'default_t'
         }
 
         $export_dirs = [
@@ -131,10 +132,7 @@ describe 'NFS setup' do
       apply_manifest_on(server, server_manifest, :catch_failures => true)
     end
 
-    it 'should converge' do
-      # on EL8, have to correct selinux type of /exports
-      # TODO:  Set the selinux context in the server manifest
-      apply_manifest_on(server, server_manifest, :catch_failures => true)
+    it 'should be idempotent' do
       apply_manifest_on(server, server_manifest, :catch_changes => true)
     end
 

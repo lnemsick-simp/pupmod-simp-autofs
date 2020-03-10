@@ -233,15 +233,15 @@
 #       mount_point: '/net/apps'
 #       mappings:
 #         # mappings is an Array for indirect maps
-#         - key:      app1
+#         - key:      v1
 #           options:  "-fstype=nfs,soft,nfsvers=4,ro"
-#           location: nfs.example.com:/exports/app1
-#         - key:      app2
+#           location: nfs.example.com:/exports/apps1
+#         - key:      v2
 #           options:  "-fstype=nfs,soft,nfsvers=4,ro"
-#           location: nfs.example.com:/exports/app2
-#         - key:      app3
+#           location: nfs.example.com:/exports/apps2
+#         - key:      latest
 #           options:  "-fstype=nfs,soft,nfsvers=4,ro"
-#           location: nfs.example.com:/exports/app3
+#           location: nfs.example.com:/exports/apps3
 #
 #     # direct mount
 #     data:

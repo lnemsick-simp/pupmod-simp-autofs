@@ -55,15 +55,15 @@ autofs::maps:
     mount_point: '/net/apps'
     mappings:
       # mappings is an Array for indirect maps
-      - key:      app1
+      - key:      v1
         options:  "-fstype=nfs,soft,nfsvers=4,ro"
-        location: nfs.example.com:/exports/app1
-      - key:      app2
+        location: nfs.example.com:/exports/apps1
+      - key:      v2
         options:  "-fstype=nfs,soft,nfsvers=4,ro"
-        location: nfs.example.com:/exports/app2
-      - key:      app3
+        location: nfs.example.com:/exports/apps2
+      - key:      latest
         options:  "-fstype=nfs,soft,nfsvers=4,ro"
-        location: nfs.example.com:/exports/app3
+        location: nfs.example.com:/exports/apps3
 
   # direct mount
   data:
@@ -696,15 +696,15 @@ autofs(5)
 ##### Create an autofs map file for a direct map
 
 ```puppet
-autofs::mapfile('apps':
+autofs::mapfile('data':
  mappings => {
-   'key'      => '/net/apps',
+   'key'      => '/net/data',
    'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
-   'location' => '1.2.3.4:/exports/apps'
+   'location' => '1.2.3.4:/exports/data'
  }
 ```
 
-##### Create an autofs map file for an indirect map with one mapping
+##### Create an autofs map file for an indirect map with wildcard key
 
 ```puppet
 autofs::mapfile('home':
@@ -723,14 +723,19 @@ autofs::mapfile('home':
 autofs::mapfile('apps':
  mappings => [
    {
-     'key'      => 'app1
+     'key'      => 'v1',
      'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-     'location' => '1.2.3.4:/exports/app1'
+     'location' => '1.2.3.4:/exports/apps1'
    },
    {
-     'key'      => 'app2
+     'key'      => 'v2',
      'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-     'location' => '1.2.3.5:/exports/app2'
+     'location' => '1.2.3.4:/exports/apps2'
+   },
+   {
+     'key'      => 'latest',
+     'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+     'location' => '1.2.3.5:/exports/apps2'
    }
  ]
 ```

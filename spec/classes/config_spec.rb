@@ -262,17 +262,17 @@ describe 'autofs' do
                 'mount_point' => '/net/apps',
                 'mappings'    => [
                   {
-                    'key'      => 'app1',
-                    'location' => '1.2.3.4:/exports/app1'
+                    'key'      => 'v1',
+                    'location' => '1.2.3.4:/exports/apps1'
                   },
                   {
-                    'key'      => 'app2',
+                    'key'      => 'v2',
                     'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
-                    'location' => '1.2.3.5:/exports/app2'
+                    'location' => '1.2.3.5:/exports/apps2'
                   },
                   {
-                    'key'      => 'app3',
-                    'location' => '1.2.3.6:/exports/app3'
+                    'key'      => 'latest',
+                    'location' => '1.2.3.6:/exports/apps3'
                   },
                 ]
               },

@@ -20,19 +20,19 @@ describe 'basic autofs' do
         'mount_point' => '/net/apps',
         'mappings'    => [
           {
-            'key'      => 'app1',
+            'key'      => 'v1',
             'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
-            'location' => "#{server_fqdn}:/exports/app1"
+            'location' => "#{server_fqdn}:/exports/apps1"
           },
           {
-            'key'      => 'app2',
+            'key'      => 'v2',
             'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
-            'location' => "#{server_fqdn}:/exports/app2"
+            'location' => "#{server_fqdn}:/exports/apps2"
           },
           {
-            'key'      => 'app3',
+            'key'      => 'latest',
             'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
-            'location' => "#{server_fqdn}:/exports/app3"
+            'location' => "#{server_fqdn}:/exports/apps3"
           },
         ]
       },
@@ -42,7 +42,7 @@ describe 'basic autofs' do
         'mappings'    => {
           'key'      => '/net/data',
           'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
-          'location' => '#{server_fqdn}:/exports/data'
+          'location' => "#{server_fqdn}:/exports/data"
         }
       },
       # indirect mount with wildcard key and key substitution
@@ -63,9 +63,9 @@ describe 'basic autofs' do
   let(:client_manifest) { 'include autofs' }
   let(:file_content_base) { 'This is a test file from' }
   let(:mounted_files) { [
-    '/net/apps/apps1/test_file',
-    '/net/apps/apps2/test_file',
-    '/net/apps/apps3/test_file',
+    '/net/apps/v1/test_file',
+    '/net/apps/v2/test_file',
+    '/net/apps/latest/test_file',
     '/net/data/test_file',
     '/home.new/user1/test_file',
     '/home.new/user2/test_file'
@@ -89,32 +89,7 @@ describe 'basic autofs' do
             filename = File.basename(file)
             on(client, %(cd #{auto_dir}; grep '#{file_content_base}' #{filename}))
           end
-
-          on(client, "find #{mount_root_path} -type f | sort")
         end
-=begin
-
-        it 'should ensure vagrant connectivity' do
-          on(hosts, 'date')
-        end
-
-        it 'automount should be valid after client reboot' do
-          client.reboot
-          wait_for_reboot_hack(client)
-          mounted_files.each do |file|
-            auto_dir = File.dirname(file)
-            filename = File.basename(file)
-            on(client, %(cd #{auto_dir}; grep '#{file_content_base}' #{filename}))
-          end
-
-          on(client, "find #{mount_root_path} -type f | sort")
-        end
-
-        it 'should stop and disable autofs service as prep for next test' do
-          # auto-mounted filesystems are unmounted when autofs service is stopped
-          on(client, %{puppet resource service autofs ensure=stopped enable=false})
-        end
-=end
       end
     end
   end
