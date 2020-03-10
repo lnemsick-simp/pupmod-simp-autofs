@@ -75,7 +75,7 @@ defines in a node's manifest and then set the appropriate configuration values
 from the `autofs` class via Hieradata.
 
 * NOTE:  The managed `/etc/auto.master` file only allows configuration of
-  included directories with the `+dir` command.  All other auto.master entries
+  included directories with the `+dir` directive.  All other auto.master entries
   must reside in one or more `*.autofs` files in one of the included directories.
 
 To configure the third file:
@@ -107,7 +107,7 @@ be discussed in the next section.
 #### Configuring auto.master entries and maps from hieradata
 
 The `autofs` class provides a simple mechanism to configure 'file' type maps
-in hieradata.  Via the `$autofs::map`` parameter, you can configure any number
+in hieradata.  Via the `$autofs::map` parameter, you can configure any number
 of direct or indirect 'file' maps.  For example,
 
 ``` yaml
@@ -169,20 +169,20 @@ This would create 3 auto.master entry files and 3 corresponding map files:
     /net/apps  /etc/autofs.maps.simp.d/apps.map
   ```
 
-* `/etc/autofs.maps.simp.d/data.map`: Direct map file.
+* `/etc/autofs.maps.simp.d/data.map`: Direct map.
 
   ```
     /net/data  -fstype=nfs,soft,nfsvers=4,ro  nfs.example.com:/exports/data
 
   ```
 
-* `/etc/autofs.maps.simp.d/home.map`: Indirect map file with wildcard key.
+* `/etc/autofs.maps.simp.d/home.map`: Indirect map with wildcard key.
 
   ```
     *  -fstype=nfs,soft,nfsvers=4,rw  nfs.example.com:/exports/home/&
   ```
 
-* `/etc/autofs.maps.simp.d/auto.map`: Indirect map file with multiple keys.
+* `/etc/autofs.maps.simp.d/auto.map`: Indirect map with multiple keys.
 
   ```
     v1  -fstype=nfs,soft,nfsvers=4,ro  nfs.example.com:/exports/apps1
@@ -190,14 +190,164 @@ This would create 3 auto.master entry files and 3 corresponding map files:
     latest  -fstype=nfs,soft,nfsvers=4,ro  nfs.example.com:/exports/apps3
   ```
 
-#### Configuring auto.master entries and maps using defines
+#### Configuring auto.master entries
 
-In lieu of configuration 'file' type maps via `autofs::maps`, you can configure
-autofs auto.master entry files for any map type, autofs map files, or pairs of
-corresponding auto.master+map files via the `autofs::masterfile`,
-`autofs::mapfile`, or `autofs::map` defines, respectively.
+To configure simply an auto.master entry file, use the `autofs::masterfile`
+define.  For example,
 
-To configure a corresponding pair
+* To create an autofs master entry file for a direct 'file' map
+
+  ```
+    autofs::masterfile { 'data':
+      mount_point => '/-',
+      map         => '/etc/autofs.maps.simp.d/data'
+    }
+   ```
+
+* To create an autofs master entry file for an indirect 'file' map
+
+  ```
+    autofs::masterfile { 'home':
+      mount_point => '/home',
+      map         => '/etc/autofs.maps.simp.d/home'
+    }
+  ```
+
+* To create an autofs master entry file for a 'program' map
+
+  ```
+    autofs::masterfile { 'nfs4':
+      mount_point => '/nfs4',
+      map_type    => 'program',
+      map         => '/usr/sbin/fedfs-map-nfs4',
+      options     => 'nobind'
+    }
+
+  ```
+
+* To create an autofs master entry file for a 'ldap' map with a pre-configured
+  LDAP server
+
+  ```
+    autofs::masterfile { 'home':
+      mount_point => '/home',
+      map_type    => 'ldap',
+      map         => 'ou=auto.indirect,dc=example,dc=com'
+    }
+  ```
+
+#### Configuring map files
+
+To configure simply a map file, use the `autofs::mapfile` define.  For
+example,
+
+* To create an autofs map file for a direct map
+
+  ```
+    autofs::mapfile {'data':
+      mappings => {
+        'key'      => '/net/data',
+        'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
+        'location' => '1.2.3.4:/exports/data'
+      }
+    }
+  ```
+
+* To create an autofs map file for an indirect map with wildcard key
+
+  ```
+    autofs::mapfile { 'home':
+      mappings => [
+        {
+          'key'      => '*',
+          'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+          'location' => '1.2.3.4:/exports/home/&'
+        }
+      ]
+    }
+  ```
+
+* To create an autofs map file for an indirect map with mutiple keys
+
+  ```
+    autofs::mapfile { 'apps':
+      mappings => [
+        {
+          'key'      => 'v1',
+          'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+          'location' => '1.2.3.4:/exports/apps1'
+        },
+        {
+          'key'      => 'v2',
+          'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+          'location' => '1.2.3.4:/exports/apps2'
+        },
+        {
+          'key'      => 'latest',
+          'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+          'location' => '1.2.3.5:/exports/apps2'
+        }
+      ]
+    }
+  ```
+
+#### Configuring (auto.master entry + map file) pairs
+
+To configure an auto.master entry file and its corresponding map file, use the
+`autofs::map` define.  For example,
+
+* To create an autofs master and map files for a direct map
+
+  ```
+    autofs::map {'data':
+      mount_point => '/-',
+      mappings    => {
+        'key'      => '/net/data',
+        'options'  => '-fstype=nfs,soft,nfsvers=4,ro',
+        'location' => '1.2.3.4:/exports/data'
+      }
+    }
+  ```
+
+* To create an autofs master and map files for an indirect map with wildcard key
+
+  ```
+    autofs::map { 'home':
+      mount_point => '/home',
+      mappings    => [
+        {
+          'key'      => '*',
+          'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+          'location' => '1.2.3.4:/exports/home/&'
+        }
+      ]
+    }
+  ```
+
+* To create an autofs master and map files for an indirect map with multiple keys
+
+  ```
+    autofs::map { 'apps':
+      mount_point => '/apps',
+      mappings    => [
+        {
+          'key'      => 'v1',
+          'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+          'location' => '1.2.3.4:/exports/apps1'
+        },
+        {
+          'key'      => 'v2',
+          'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+          'location' => '1.2.3.4:/exports/apps2'
+        },
+        {
+          'key'      => 'latest',
+          'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
+          'location' => '1.2.3.5:/exports/apps2'
+        }
+      ]
+    }
+  ```
 
 ## Reference
 
@@ -207,7 +357,8 @@ Please refer to the [REFERENCE.md](./REFERENCE.md).
 
 * This module does not support `amd` configuration.
 
-  * The `am-utils` service has been removed from Red Hat Enterprise Linux 8.
+  * The `am-utils` service has been removed from Red Hat Enterprise Linux 8,
+    and the support tail for `amd` configuration is unclear.
 
 * This module has no direct support for creating hesiod-formatted map files.
 * This module does not manage program executables that may be referenced in an
@@ -227,6 +378,7 @@ Please read our [Contribution Guide](https://simp.readthedocs.io/en/stable/contr
 Unit tests, written in ``rspec-puppet`` can be run by calling:
 
 ```shell
+bundle install
 bundle exec rake spec
 ```
 
