@@ -248,7 +248,7 @@
 #       mount_point: /-
 #       mappings:
 #         # mappings is a single Hash for direct maps
-#         key:      /net/apps'
+#         key:      /net/apps
 #         options:  "-fstype=nfs,soft,nfsvers=4,ro"
 #         location: nfs.example.com:/exports/data
 #

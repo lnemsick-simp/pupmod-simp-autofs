@@ -70,7 +70,7 @@ autofs::maps:
     mount_point: /-
     mappings:
       # mappings is a single Hash for direct maps
-      key:      /net/apps'
+      key:      /net/apps
       options:  "-fstype=nfs,soft,nfsvers=4,ro"
       location: nfs.example.com:/exports/data
 
@@ -782,13 +782,6 @@ This will only create the autofs master entry file.
 * If the map type is 'program', you will need to ensure the specified
   executable is available and has the appropriate permissions.
 
-server is set in LDAP config
-  autofs::masterfile { 'home':
-    mount_point => '/home',
-    map_type    => 'ldap'
-    map         => 'ou=auto.indirect,dc=example,dc=com,
-  }
-
 * **See also**
 auto.master(5)
 
@@ -823,10 +816,14 @@ autofs::masterfile { 'nfs4':
 }
 ```
 
-##### Create an autofs master entry file for a ldap map where the LDAP
+##### Create an autofs master entry file for a ldap map with pre-configured LDAP server
 
 ```puppet
-
+autofs::masterfile { 'home':
+  mount_point => '/home',
+  map_type    => 'ldap',
+  map         => 'ou=auto.indirect,dc=example,dc=com'
+}
 ```
 
 #### Parameters

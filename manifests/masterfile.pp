@@ -70,12 +70,11 @@
 #     options     => 'nobind'
 #   }
 #
-# @example Create an autofs master entry file for a ldap map where the LDAP
-# server is set in LDAP config
+# @example Create an autofs master entry file for a ldap map with pre-configured LDAP server
 #   autofs::masterfile { 'home':
 #     mount_point => '/home',
-#     map_type    => 'ldap'
-#     map         => 'ou=auto.indirect,dc=example,dc=com,
+#     map_type    => 'ldap',
+#     map         => 'ou=auto.indirect,dc=example,dc=com'
 #   }
 #
 # @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors
