@@ -116,15 +116,6 @@ describe 'autofs::masterfile' do
       end
 
       context 'with errors' do
-        context 'with unspecified map_type and map that is not an absolute path' do
-          let(:params) {{
-            :mount_point => 'my_stuff',
-            :map         => file_map
-          }}
-
-          it { is_expected.to_not compile.with_all_deps }
-        end
-
         context 'with map_type=file and map that is not an absolute path' do
           let(:params) {{
             :mount_point => 'my_stuff',

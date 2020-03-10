@@ -3,11 +3,11 @@
 # Creates a pair of `autofs::masterfile` and `autofs::mapfile` resources for
 # `$name`.
 #
-# * The auto.master entry will have the default (implied) 'map_type' of 'file',
-#   the default (implied) 'map_format' of 'sun', and be written to file in
-#   `${autofs::master_conf_dir}`.
+# * The auto.master entry will have the implied 'map_type' of 'file', will
+#   have the default 'map_format' of 'sun', and will be written to file in
+#   `$autofs::master_conf_dir`.
 # * The corresponding map file will be in 'sun' format and be located in
-#   `${autofs::maps_dir}`.
+#   `$autofs::maps_dir`.
 #
 # @param name
 #   Basename of the map
@@ -16,17 +16,18 @@
 #     `${autofs::master_conf_dir}/${name}.autofs`
 #   * Corresponding map file will be named `${autofs::maps_dir}/${name}.map`
 #   * If `$name` has any whitespace or '/' characters, those characters will be
-#     replaced with '__' in order to create safe filenames
+#     replaced with '__' in order to create safe filenames.
 #
 # @param mount_point
 #   Base location for the autofs filesystem to be mounted
 #
-#   * Set to '/-' for direct maps
-#   * Set to a fully-qualified path for indirect mounts
+#   * Set to '/-' for a direct map
+#   * Set to a fully-qualified path for an indirect map
 #   * See auto.master(5) -> FORMAT -> mount-point
 #
 # @param master_options
-#   Options for `mount` and/or `automount` specified in the auto.master entry file
+#   Options for the `mount` and/or `automount` commands that are to be specified
+#   in the auto.master entry file
 #
 #   * See auto.master(5) -> FORMAT -> options
 #

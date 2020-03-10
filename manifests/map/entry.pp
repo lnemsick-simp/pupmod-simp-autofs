@@ -68,7 +68,10 @@ define autofs::map::entry (
     $_content = "${_key}\t${options}\t${location}"
   }
 
-  # make sure file in old location is removed
+  # Make sure the map file in the old location is removed. We can't remove the
+  # /etc/autofs directory, because it was not fully managed.  Specifically, the
+  # file resource had a bug whereby it was using the purge attribute without
+  # the recurse attribute.  So, files not managed by Puppet may be present.
   file { "/etc/autofs/${target}.map":
     ensure => absent
   }

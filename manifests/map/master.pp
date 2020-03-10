@@ -60,6 +60,13 @@ define autofs::map::master (
       fail('You must specify either "$content" or "$mount_point" and "$map_name"')
     }
 
+    # map_name validation
+    if $map_type in ['file','program'] {
+      if $map_name !~ Stdlib::Absolutepath {
+        fail('"$map_name" must be a Stdlib::Absolutepath when "$map_type" is "file" or "program"')
+      }
+    }
+
     autofs::masterfile { $name:
       mount_point => $mount_point,
       map         => $map_name,

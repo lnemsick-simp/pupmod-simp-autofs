@@ -1,8 +1,9 @@
 # @summary Create an autofs map file
 #
-# You will need to create an corresponding `autofs::masterfile` entry for this
-# to be activated.  Alternatively, use `autofs::map`, which will create both
-# the master entry file and its map file for you.
+# You will need to create an corresponding auto.master entry file, e.g. using
+# `autofs::masterfile`, for this to be activated.  Alternatively, use
+# `autofs::map`, which will create both the master entry file and its map file
+# for you.
 #
 # @see autofs(5)
 #
@@ -10,18 +11,18 @@
 #   Base name of the map excluding the path and the `.map` suffix
 #
 #   * If `$name` has any whitespace or '/' characters, those characters will be
-#     replaced with '__' in order to create safe filenames
+#     replaced with '__' in order to create a safe filename.
 #
 # @param mappings
 #   Single direct mapping or one or more indirect mappings
 #
-#   * Each mapping specifies a key, a location, and any automounter and/or
-#     mount options.
+#   * Each mapping specifies a key, a location, and any `automount` and/or
+#     `mount` options.
 #   * Any change to a direct map will trigger a reload of the autofs service.
 #     This is not necessary for an indirect map.
 #
 # @param maps_dir
-#   When unset defaults to `autofs::maps_dir`
+#   When unset defaults to `$autofs::maps_dir`
 #
 # @example Create an autofs map file for a direct map
 #   autofs::mapfile {'data':

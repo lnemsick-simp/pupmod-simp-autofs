@@ -148,7 +148,7 @@
 #   * 'map_attribute' parameter in the 'autofs' section of /etc/autofs.conf
 #
 # @param entry_attribute
-#   Attribute  used  to  identify  a map key
+#   Attribute used to identify a map key
 #
 #   * Only applies if `$ldap` is `true`.
 #   * 'entry_attribute' parameter in the 'autofs' section of /etc/autofs.conf
@@ -198,6 +198,7 @@
 #   Specification of 'file' maps to be configured
 #
 #   * An autofs master entry file and map file will be created for each map
+#     specification.
 #
 # @param samba_package_ensure
 #   The value to pass to the `ensure` parameter of the `samba-utils` package.

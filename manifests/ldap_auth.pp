@@ -41,11 +41,11 @@
 #
 # @param external_cert
 #   This specifies the path of the file containing the client certificate.
-#   Set `autofs::pki` to `false` if you don't want SIMP to manage this cert.
+#   Set `$autofs::pki` to `false` if you don't want SIMP to manage this cert.
 #
 # @param external_key
 #   This specifies the path of the file containing the client certificate key
-#   Set `autofs::pki` to `false` if you don't want SIMP to manage this key.
+#   Set `$autofs::pki` to `false` if you don't want SIMP to manage this key.
 #
 # @param user
 #   This attribute holds the authentication identity used by authentication
@@ -76,7 +76,6 @@
 # @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors
 #
 class autofs::ldap_auth (
-# FIXME optional with a default...does this work?
   Optional[String]                              $user                = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => undef }),
   Optional[String]                              $secret              = simplib::lookup('simp_options::ldap::bind_pw', { 'default_value' =>  undef}),
   Optional[String]                              $encoded_secret      = undef,

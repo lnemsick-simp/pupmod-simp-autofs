@@ -44,7 +44,7 @@ it can be used independently:
 
 ### What autofs affects
 
-The `autofs` module installs autofs packages, configures the autofs services,
+The `autofs` module installs autofs packages, configures the autofs service,
 and manages all autofs configuration files.
 
 It does not manage NFS, but seamlessly interoperates with the
@@ -97,7 +97,7 @@ To configure the third file:
 #### Managing automount maps
 
 You can configure the automount map configuration via the `$autofs::maps`
-parameter, or by including the `autofs::map`, `autofs::masterfile`, and/or
+parameter, or by including `autofs::map`, `autofs::masterfile`, and/or
 `autofs::mapfile` defines in your node's manifest. By default these will
 create auto.master entry files in `/etc/auto.master.simp.d` and map files in
 `/etc/autofs.maps.simp.d`. Both directories are fully managed by the `autofs`
@@ -167,7 +167,7 @@ This would create 3 auto.master entry files and 3 corresponding map files:
   ```
 
 * `/etc/auto.master.simp.d/auto.autofs`: Indirect map auto.master entry
-  that references the `/etc/autofs.simp.maps.d/auto.map` map file.
+  that references the `/etc/autofs.simp.maps.d/apps.map` map file.
 
   ```
     /net/apps  /etc/autofs.maps.simp.d/apps.map
@@ -295,7 +295,7 @@ example,
     }
   ```
 
-#### Configuring (auto.master entry + map file) pairs
+#### Configuring auto.master entry + map file pairs
 
 To configure an auto.master entry file and its corresponding map file, use the
 `autofs::map` define.  For example,
@@ -313,12 +313,14 @@ To configure an auto.master entry file and its corresponding map file, use the
     }
   ```
 
-* To create an autofs master and map files for an indirect map with wildcard key
+* To create an autofs master and map files for an indirect map with the
+  wildcard key
 
   ```
     autofs::map { 'home':
-      mount_point => '/home',
-      mappings    => [
+      mount_point    => '/home',
+      master_options => 'strictexpire',
+      mappings       => [
         {
           'key'      => '*',
           'options'  => '-fstype=nfs,soft,nfsvers=4,rw',

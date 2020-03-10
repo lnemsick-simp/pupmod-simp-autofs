@@ -1,9 +1,10 @@
 # @summary Create a `$name.autofs` master entry file in `$autofs::master_conf_dir`
 #
 # This will only create the autofs master entry file.
+#
 # * If the map type is 'file' or unspecified, you will need to create the map
-#   file using `autofs::mapfile`.  Alternatively, use `autofs::map` which will
-#   create both the master entry file and its map file.
+#   file, e.g. using `autofs::mapfile`.  Alternatively, use `autofs::map` which
+#   will create both the master entry file and its map file.
 # * If the map type is 'program', you will need to ensure the specified
 #   executable is available and has the appropriate permissions.
 #
@@ -14,7 +15,7 @@
 #   `.autofs` suffix
 #
 #   * If `$name` has any whitespace or '/' characters, those characters will be
-#     replaced with '__' in order to create safe filenames
+#     replaced with '__' in order to create a safe filename.
 #
 # @param mount_point
 #   Base location for the autofs filesystem to be mounted
@@ -29,14 +30,14 @@
 #   * See auto.master(5) -> FORMAT -> map
 #   * Format of this String must match $map_type:
 #
-#     * $map_type of undef|file|program => Absolute Path
+#     * $map_type of file|program => Absolute Path
 #     * $map_type of yp|nisplus|hesiod  => String
 #     * $map_type of ldap|ldaps         => LDAP DN
 #
 # @param map_type
 #   Type of map used for this mount point
 #
-#   * When unspecified, autofs assumes this is 'file'
+#   * When unspecified, autofs auto-detects the type.
 #   * See auto.master(5) -> FORMAT -> map-type
 #
 # @param map_format
@@ -90,7 +91,7 @@ define autofs::masterfile (
   include 'autofs'
 
   # Validate format of the $map String for the subset of cases that we can!
-  if ($map_type == Undef) or ($map_type in ['file','program']) {
+  if ($map_type in ['file','program']) {
     if $map !~ Stdlib::Absolutepath {
       fail('"$map" must be a Stdlib::Absolutepath when "$map_type" is not specified or is "file" or "program"')
     }

@@ -349,7 +349,7 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
-Attribute  used  to  identify  a map key
+Attribute used to identify a map key
 
 * Only applies if `$ldap` is `true`.
 * 'entry_attribute' parameter in the 'autofs' section of /etc/autofs.conf
@@ -444,6 +444,7 @@ Data type: `Hash[String,Autofs::Mapspec]`
 Specification of 'file' maps to be configured
 
 * An autofs master entry file and map file will be created for each map
+  specification.
 
 Default value: {}
 
@@ -504,11 +505,11 @@ Manage autofs service
 Creates a pair of `autofs::masterfile` and `autofs::mapfile` resources for
 `$name`.
 
-* The auto.master entry will have the default (implied) 'map_type' of 'file',
-  the default (implied) 'map_format' of 'sun', and be written to file in
-  `${autofs::master_conf_dir}`.
+* The auto.master entry will have the implied 'map_type' of 'file', will
+  have the default 'map_format' of 'sun', and will be written to file in
+  `$autofs::master_conf_dir`.
 * The corresponding map file will be in 'sun' format and be located in
-  `${autofs::maps_dir}`.
+  `$autofs::maps_dir`.
 
 #### Examples
 
@@ -577,7 +578,7 @@ Basename of the map
   `${autofs::master_conf_dir}/${name}.autofs`
 * Corresponding map file will be named `${autofs::maps_dir}/${name}.map`
 * If `$name` has any whitespace or '/' characters, those characters will be
-  replaced with '__' in order to create safe filenames
+  replaced with '__' in order to create safe filenames.
 
 ##### `mount_point`
 
@@ -585,15 +586,16 @@ Data type: `Stdlib::Absolutepath`
 
 Base location for the autofs filesystem to be mounted
 
-* Set to '/-' for direct maps
-* Set to a fully-qualified path for indirect mounts
+* Set to '/-' for a direct map
+* Set to a fully-qualified path for an indirect map
 * See auto.master(5) -> FORMAT -> mount-point
 
 ##### `master_options`
 
 Data type: `Optional[String]`
 
-Options for `mount` and/or `automount` specified in the auto.master entry file
+Options for the `mount` and/or `automount` commands that are to be specified
+in the auto.master entry file
 
 * See auto.master(5) -> FORMAT -> options
 
@@ -740,9 +742,10 @@ Default value: `undef`
 
 ### autofs::mapfile
 
-You will need to create an corresponding `autofs::masterfile` entry for this
-to be activated.  Alternatively, use `autofs::map`, which will create both
-the master entry file and its map file for you.
+You will need to create an corresponding auto.master entry file, e.g. using
+`autofs::masterfile`, for this to be activated.  Alternatively, use
+`autofs::map`, which will create both the master entry file and its map file
+for you.
 
 * **See also**
 autofs(5)
@@ -808,7 +811,7 @@ The following parameters are available in the `autofs::mapfile` defined type.
 Base name of the map excluding the path and the `.map` suffix
 
 * If `$name` has any whitespace or '/' characters, those characters will be
-  replaced with '__' in order to create safe filenames
+  replaced with '__' in order to create a safe filename.
 
 ##### `mappings`
 
@@ -816,8 +819,8 @@ Data type: `Variant[Autofs::Directmapping, Array[Autofs::Indirectmapping,1]]`
 
 Single direct mapping or one or more indirect mappings
 
-* Each mapping specifies a key, a location, and any automounter and/or
-  mount options.
+* Each mapping specifies a key, a location, and any `automount` and/or
+  `mount` options.
 * Any change to a direct map will trigger a reload of the autofs service.
   This is not necessary for an indirect map.
 
@@ -825,16 +828,17 @@ Single direct mapping or one or more indirect mappings
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
-When unset defaults to `autofs::maps_dir`
+When unset defaults to `$autofs::maps_dir`
 
 Default value: `undef`
 
 ### autofs::masterfile
 
 This will only create the autofs master entry file.
+
 * If the map type is 'file' or unspecified, you will need to create the map
-  file using `autofs::mapfile`.  Alternatively, use `autofs::map` which will
-  create both the master entry file and its map file.
+  file, e.g. using `autofs::mapfile`.  Alternatively, use `autofs::map` which
+  will create both the master entry file and its map file.
 * If the map type is 'program', you will need to ensure the specified
   executable is available and has the appropriate permissions.
 
@@ -892,7 +896,7 @@ Base name of the autofs master entry file excluding the path and the
 `.autofs` suffix
 
 * If `$name` has any whitespace or '/' characters, those characters will be
-  replaced with '__' in order to create safe filenames
+  replaced with '__' in order to create a safe filename.
 
 ##### `mount_point`
 
@@ -913,7 +917,7 @@ Name of the map to use
 * See auto.master(5) -> FORMAT -> map
 * Format of this String must match $map_type:
 
-  * $map_type of undef|file|program => Absolute Path
+  * $map_type of file|program => Absolute Path
   * $map_type of yp|nisplus|hesiod  => String
   * $map_type of ldap|ldaps         => LDAP DN
 
@@ -923,7 +927,7 @@ Data type: `Optional[Autofs::Maptype]`
 
 Type of map used for this mount point
 
-* When unspecified, autofs assumes this is 'file'
+* When unspecified, autofs auto-detects the type.
 * See auto.master(5) -> FORMAT -> map-type
 
 Default value: `undef`

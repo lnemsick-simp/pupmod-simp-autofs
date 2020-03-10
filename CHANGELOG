@@ -62,7 +62,7 @@
       specified
   - autofs::map::master has been deprecated by autofs::map or
     autofs::masterfile.  Its behavior has changed from writing a section
-    of /etc/auto.master to writing a autofs master entry file in
+    of /etc/auto.master to writing an autofs master entry file in
     $autofs::master_conf_dir.
   - autofs::map::entry has been deprecated by autofs::map or autofs::mapfile.
     Its behavior has changed from writing a file in /etc/autofs to writing
