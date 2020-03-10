@@ -63,20 +63,21 @@ as well as `auto.master` entry files and map files.
 
 #### Managing general configuration files
 
-The `autofs` module manages the following general configuraton files:
+The `autofs` module manages the following general configuration files:
 
 * `/etc/autofs.conf`
 * `/etc/autofs/sysconfig/autofs`
 * `/etc/auto.master`
 * `/etc/autofs_ldap_auth.conf`
 
-To configure the first three files, simply include `autofs` or one of this module's
-defines in a node's manifest and then set the appropriate configuration values
-from the `autofs` class via Hieradata.
+To configure the first three files, simply include `autofs` or one of this
+module's defines in a node's manifest and then set the appropriate
+configuration values from the `autofs` class via Hieradata.
 
-* NOTE:  The managed `/etc/auto.master` file only allows configuration of
-  included directories with the `+dir` directive.  All other auto.master entries
-  must reside in one or more `*.autofs` files in one of the included directories.
+* The managed `/etc/auto.master` file only allows configuration of included
+  directories with one or more `+dir` directives.  All other auto.master
+  entries must reside in one or more `*.autofs` files in one of the included
+  directories.
 
 To configure the third file:
 
@@ -97,8 +98,11 @@ To configure the third file:
 
 You can configure the automount map configuration via the `$autofs::maps`
 parameter, or by including the `autofs::map`, `autofs::masterfile`, and/or
-`autofs::mapfile` defines in your node's manifest. These options will
-be discussed in the next section.
+`autofs::mapfile` defines in your node's manifest. By default these will
+create auto.master entry files in `/etc/auto.master.simp.d` and map files in
+`/etc/autofs.maps.simp.d`. Both directories are fully managed by the `autofs`
+module. This means any files in those directories that are not managed by a
+Puppet resource will be purged.
 
 ## Usage
 
@@ -192,7 +196,7 @@ This would create 3 auto.master entry files and 3 corresponding map files:
 
 #### Configuring auto.master entries
 
-To configure simply an auto.master entry file, use the `autofs::masterfile`
+To configure just an auto.master entry file, use the `autofs::masterfile`
 define.  For example,
 
 * To create an autofs master entry file for a direct 'file' map
@@ -238,7 +242,7 @@ define.  For example,
 
 #### Configuring map files
 
-To configure simply a map file, use the `autofs::mapfile` define.  For
+To configure just a map file, use the `autofs::mapfile` define.  For
 example,
 
 * To create an autofs map file for a direct map
@@ -285,7 +289,7 @@ example,
         {
           'key'      => 'latest',
           'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-          'location' => '1.2.3.5:/exports/apps2'
+          'location' => '1.2.3.5:/exports/apps3'
         }
       ]
     }
@@ -343,7 +347,7 @@ To configure an auto.master entry file and its corresponding map file, use the
         {
           'key'      => 'latest',
           'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-          'location' => '1.2.3.5:/exports/apps2'
+          'location' => '1.2.3.5:/exports/apps3'
         }
       ]
     }
@@ -361,8 +365,15 @@ Please refer to the [REFERENCE.md](./REFERENCE.md).
     and the support tail for `amd` configuration is unclear.
 
 * This module has no direct support for creating hesiod-formatted map files.
+
+  * You can use a `file` resource to manage a hesiod-formatted map file. Just
+    make sure all of your custom map files that contain a direct map notify
+    the `Exec['autofs_reload']` resource.
+
 * This module does not manage program executables that may be referenced in an
   auto.master entry.
+
+  * You can use a `file` resource to manage a program executable.
 
 SIMP Puppet modules are generally intended for use on Red Hat Enterprise Linux
 and compatible distributions, such as CentOS. Please see the [`metadata.json` file](./metadata.json)

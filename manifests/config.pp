@@ -1,4 +1,4 @@
-# @summary Manages `autofs` global configuration 
+# @summary Manages `autofs` global configuration
 #
 # @api private
 # @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors

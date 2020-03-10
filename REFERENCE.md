@@ -559,7 +559,7 @@ autofs::map { 'apps':
     {
       'key'      => 'latest',
       'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-      'location' => '1.2.3.5:/exports/apps2'
+      'location' => '1.2.3.5:/exports/apps3'
     }
   ]
 }
@@ -793,7 +793,7 @@ autofs::mapfile { 'apps':
     {
       'key'      => 'latest',
       'options'  => '-fstype=nfs,soft,nfsvers=4,rw',
-      'location' => '1.2.3.5:/exports/apps2'
+      'location' => '1.2.3.5:/exports/apps3'
     }
   ]
 }
