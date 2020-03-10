@@ -80,7 +80,6 @@
 #     ]
 #   }
 #
-#
 # @author https://github.com/simp/pupmod-simp-autofs/graphs/contributors
 #
 define autofs::map(
